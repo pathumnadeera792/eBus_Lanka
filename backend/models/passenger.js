@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+
+//schema create
 const passengerSchema = new mongoose.Schema(
     {
         fullName: { type: String, required: true },

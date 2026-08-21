@@ -39,7 +39,7 @@ app.use(
 
 
 //connect to mongodb
-const connectionString = process.env.MONGO_URI;
+const connectionString = process.env.MONGODB_URI;
 mongoose.connect(connectionString).then(
     () => {
           console.log("Connected to MongoDB");

@@ -2,23 +2,8 @@ import Passenger from "../models/Passenger.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-//create passenger
+// Create Passenger (Public Registration)
 export function createPassenger(req, res) {
-    
-    if(req.passenger == null){
-        res.status(403).json({
-            message: "You are not authorized to access this resource"
-        })
-        return;
-    } 
-    if(req.passenger.role != "admin"){
-        res.status(403).json({
-            message: "Please login as an admin to create a passenger"
-        })
-        return;
-    }
-
-
 
     const passwordHash = bcrypt.hashSync(req.body.password, 10);
 
@@ -34,6 +19,7 @@ export function createPassenger(req, res) {
     };
 
     const passenger = new Passenger(passengerData);
+    
     passenger.save().then(
         () => {
             res.status(201).json({
@@ -41,15 +27,16 @@ export function createPassenger(req, res) {
             })
         }
     ).catch(
-        () => {
-            res.json({
-                message: "Error creating passenger"
+        (err) => {
+            res.status(500).json({
+                message: "Error creating passenger",
+                error: err.message 
             })
         }
     )
 }
 
-//login passenger
+// Login Passenger
 export function loginPassenger(req, res) {
     const email = req.body.email;
     const password = req.body.password;
@@ -62,24 +49,24 @@ export function loginPassenger(req, res) {
                 })
             } else {
                 const isPasswordCorrect = bcrypt.compareSync(password, passenger.password)
+                
                 if (isPasswordCorrect) {
-
-                    //create JWT token
+                    // Create JWT token (.env using dotenv package)
                     const token = jwt.sign( {
                             id: passenger._id,
                             fullName: passenger.fullName,
                             userName: passenger.userName,
                             email: passenger.email,
-                            role: passenger.role,
-                            isBlocked: passenger.isBlocked,
-                            isEmailVerified: passenger.isEmailVerified,
-                            image: passenger.image
-                        },"cbc-6503")
-                        console.log(token);
+                            role: passenger.role
+                        }, process.env.JWT_SECRET, { expiresIn: "1d" }); // Token expires in 1 day
 
                     res.json({
+                        message: "Login successful",
                         token: token,
-                        message: "Login successful"
+                        user: {
+                            fullName: passenger.fullName,
+                            role: passenger.role
+                        }
                     })
                 } else {
                     res.status(403).json({
@@ -92,7 +79,7 @@ export function loginPassenger(req, res) {
         (err) => {
             res.status(500).json({
                 message: "Error logging in",
-                error: err
+                error: err.message
             })
         }
     )

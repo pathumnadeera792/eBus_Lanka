@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import passengerRouter from "./routers/passengerRouter.js";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 
 const app = express();
@@ -19,7 +21,7 @@ app.use(
 
     if (value != null) {
       const token = value.replace("Bearer ", ""); //remove the bearer from the token
-      jwt.verify(token, "cbc-6503", (err, decoded) => {
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
           res.status(403).json({
             message: "You are not authorized to access this resource"
@@ -37,7 +39,7 @@ app.use(
 
 
 //connect to mongodb
-const connectionString = "mongodb+srv://pathumnadeera100_db_user:Xx68PcNjY1cx2srq@cluster0.maj1nja.mongodb.net/eBusLanka?appName=Cluster0"
+const connectionString = process.env.MONGO_URI;
 mongoose.connect(connectionString).then(
     () => {
           console.log("Connected to MongoDB");

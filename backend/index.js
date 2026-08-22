@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import passengerRouter from "./routers/passengerRouter.js";
 import operatorRouter from "./routers/operatorRouter.js";
+import adminRouter from "./routers/adminRouter.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
@@ -53,7 +54,7 @@ mongoose.connect(connectionString).then(
 
 app.use("/passengers", passengerRouter); // Route for passenger-related endpoints
 app.use("/operators", operatorRouter); // Route for operator-related endpoints
-
+app.use("/admins", adminRouter); // Route for admin-related endpoints
 
 
 //listen to port 5000

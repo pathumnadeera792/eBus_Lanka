@@ -5,6 +5,7 @@ import passengerRouter from "./routers/passengerRouter.js";
 import operatorRouter from "./routers/operatorRouter.js";
 import adminRouter from "./routers/adminRouter.js";
 import jwt from "jsonwebtoken";
+import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -14,6 +15,8 @@ const app = express();
 
 //body parser middleware
 app.use(bodyParser.json());
+
+app.use(cors()); // Enable CORS for all routes
 
 
 //middleware to verify JWT token

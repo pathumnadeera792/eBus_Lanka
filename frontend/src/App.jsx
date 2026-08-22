@@ -1,16 +1,37 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster } from "react-hot-toast"; // Import toaster for popup messages
+import "./App.css";
+
+// Import pages
+import HomePage from "./pages/homePage";
+import LoginPage from "./pages/loginPage";
+import BusPage from "./pages/busPage";
+import TestPage from "./pages/testPage";
+import ChooseLoginPage from "./pages/chooseLoginPage";
+import AboutPage from "./pages/aboutPage";
+import ContactPage from "./pages/contactPage";
+
+
 function App() {
   return (
-    <div className = " w-full h-screen bg-blue-300">
-      <div className = "w-[600px] h-[600px] bg-black flex flex-col justify-evenly items-center ">
-      <div className = "w-[75px] h-[75px] bg-yellow-600"></div>
-      <div className = "w-[75px] h-[75px] bg-red-600"></div>
-      <div className = "w-[75px] h-[75px] bg-green-600"></div>
-      <div className = "w-[75px] h-[75px] bg-pink-600"></div>
-      <div className = "w-[75px] h-[75px] bg-orange-600"></div>
-      <div className = "w-[75px] h-[75px] bg-indigo-600"></div>
+    <BrowserRouter>
+      {/* Show toast messages at the top-right corner */}
+      <Toaster position="top-right" />
+      
+      {/* Main container with Tailwind CSS */}
+      <div className="w-full h-screen bg-blue-300">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/bus" element={<BusPage />} />
+          <Route path="/test" element={<TestPage />} />
+          <Route path="/choose-login" element={<ChooseLoginPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage/>}/>
+        </Routes>
       </div>
-    </div>
-  )
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

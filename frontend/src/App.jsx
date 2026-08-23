@@ -10,10 +10,15 @@ import AboutPage from "./pages/aboutPage";
 import ContactPage from "./pages/contactPage";
 import RegisterPage from "./pages/registerPage";
 import FindBusPage from "./pages/findBusPage";
+
+//operator
 import OperatorDashboard from "./pages/operator/OperatorDashboard";
 import OperatorRegisterPage from "./pages/operator/RegisterPage";
 import OperatorLoginPage from "./pages/operator/LoginPage";
 
+//admin
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import OperatorRequests from "./pages/admin/OperatorRequests";
 
 
 function App() {
@@ -32,9 +37,15 @@ function App() {
           <Route path="/contact" element={<ContactPage/>}/>
           <Route path="/register" element={<RegisterPage/>}/>
           <Route path="/find-bus" element={<FindBusPage/>}/>
+
+          {/* Operator Routes */}
           <Route path="/operator/dashboard" element={<OperatorDashboard />} />
           <Route path="/operator/register" element={<OperatorRegisterPage />} />
           <Route path="/operator/login" element={<OperatorLoginPage />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/operator-requests" element={<OperatorRequests />} />
         </Routes> 
       </div>
     </BrowserRouter>

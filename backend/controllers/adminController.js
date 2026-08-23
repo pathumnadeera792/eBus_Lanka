@@ -55,22 +55,25 @@ export async function loginAdmin(req, res) {
     }
 }
 
-// 3. Get Pending Operators to admin dashboard (isApproved: false operators)
+// 3. Get Pending Operators to admin dashboard
 export async function getPendingOperators(req, res) {
     try {
-        // isApproved: false operators gain
-        const pendingOperators = await Operator.find({ isApproved: false }, "-password"); // -password to exclude password field from the response
-        res.json({ operators: pendingOperators });
+        // Find operators where isApproved is false, exclude password
+        const pendingOperators = await Operator.find({ isApproved: false }, "-password"); 
+        
+        // Return DIRECT array to frontend to fix the loading issue
+        res.status(200).json(pendingOperators);
     } catch (error) {
         res.status(500).json({ message: "Error fetching operators", error: error.message });
     }
 }
 
-// 4. Approve Operator (Status change from isApproved: false to isApproved: true)
+// 4. Approve Operator 
 export async function approveOperator(req, res) {
     try {
-        const operatorId = req.params.id; // Gain the operator ID from the request parameters
+        const operatorId = req.params.id; // Get ID from URL
         
+        // Update isApproved status to true
         const updatedOperator = await Operator.findByIdAndUpdate(
             operatorId, 
             { isApproved: true }, 
@@ -81,8 +84,26 @@ export async function approveOperator(req, res) {
             return res.status(404).json({ message: "Operator not found" });
         }
 
-        res.json({ message: "Operator approved successfully", operator: updatedOperator });
+        res.status(200).json({ message: "Operator approved successfully", operator: updatedOperator });
     } catch (error) {
         res.status(500).json({ message: "Error approving operator", error: error.message });
+    }
+}
+
+// 5. Reject and Delete Operator 
+export async function rejectOperator(req, res) {
+    try {
+        const operatorId = req.params.id;
+        
+        // Delete the operator completely from database
+        const deletedOperator = await Operator.findByIdAndDelete(operatorId);
+        
+        if (!deletedOperator) {
+            return res.status(404).json({ message: "Operator not found" });
+        }
+
+        res.status(200).json({ message: "Operator rejected successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error rejecting operator", error: error.message });
     }
 }

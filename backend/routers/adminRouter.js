@@ -5,7 +5,7 @@ const adminRouter = express.Router();
 
 adminRouter.post("/register", createAdmin);
 adminRouter.post("/login", loginAdmin);
-adminRouter.get("/pending-operators", getPendingOperators);
+adminRouter.get("/operators/pending", getPendingOperators);
 adminRouter.put("/approve-operator/:id", approveOperator);
 
 export default adminRouter;

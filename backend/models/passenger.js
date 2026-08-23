@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 //schema create
 const passengerSchema = new mongoose.Schema(
     {
@@ -12,6 +11,8 @@ const passengerSchema = new mongoose.Schema(
         phone: { type: String, required: true },
         gender: { type: String, enum: ['Male', 'Female', 'Other'] },
         password: { type: String, required: true },
+        securityQuestion: { type: String, required: true },
+        answer: { type: String, required: true },
         role: { type: String, default: 'passenger' },
         isBlocked: { type: Boolean, default: false },
         isEmailVerified: { type: Boolean, default: false },

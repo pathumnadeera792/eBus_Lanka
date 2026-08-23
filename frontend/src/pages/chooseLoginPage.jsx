@@ -33,7 +33,7 @@ export default function ChooseLoginPage() {
         {/* Card 1: Passenger */}
         <Link 
           to="/login" 
-          className="bg-green-300 w-full max-w-sm p-12 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.1)] hover:shadow-[0_15px_40px_rgba(34,197,94,0.3)] hover:-translate-y-2 transition-all duration-300 flex flex-col items-center text-center border border-green-400 group"
+          className="bg-green-100 w-full max-w-sm p-12 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.1)] hover:shadow-[0_15px_40px_rgba(34,197,94,0.3)] hover:-translate-y-2 transition-all duration-300 flex flex-col items-center text-center border border-green-400 group"
         >
           {/* Icon with slight animation on hover */}
           <FaUserCircle className="text-9xl mb-8 text-gray-900 group-hover:scale-110 transition-transform duration-300" />
@@ -49,8 +49,8 @@ export default function ChooseLoginPage() {
 
         {/* Card 2: Bus Operator */}
         <Link 
-          to="/operator-login" 
-          className="bg-green-300 w-full max-w-sm p-12 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.1)] hover:shadow-[0_15px_40px_rgba(34,197,94,0.3)] hover:-translate-y-2 transition-all duration-300 flex flex-col items-center text-center border border-green-400 group"
+          to="/operator/login" 
+          className="bg-green-100 w-full max-w-sm p-12 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.1)] hover:shadow-[0_15px_40px_rgba(34,197,94,0.3)] hover:-translate-y-2 transition-all duration-300 flex flex-col items-center text-center border border-green-400 group"
         >
           {/* Icon with slight animation on hover */}
           <FaBus className="text-9xl mb-8 text-gray-900 group-hover:scale-110 transition-transform duration-300" />

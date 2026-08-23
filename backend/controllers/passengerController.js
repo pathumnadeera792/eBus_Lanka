@@ -1,4 +1,4 @@
-import Passenger from "../models/Passenger.js";
+import Passenger from "../models/passenger.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -15,7 +15,9 @@ export function createPassenger(req, res) {
         address: req.body.address,
         phone: req.body.phone,
         gender: req.body.gender,
-        password: passwordHash
+        password: passwordHash,
+        securityQuestion: req.body.securityQuestion,
+        answer: req.body.answer
     };
 
     const passenger = new Passenger(passengerData);

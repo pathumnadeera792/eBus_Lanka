@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import passengerRouter from "./routers/passengerRouter.js";
 import operatorRouter from "./routers/operatorRouter.js";
 import adminRouter from "./routers/adminRouter.js";
+import busRouter from "./routers/busRouter.js";
 import jwt from "jsonwebtoken";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -58,6 +59,7 @@ mongoose.connect(connectionString).then(
 app.use("/passengers", passengerRouter); // Route for passenger-related endpoints
 app.use("/operators", operatorRouter); // Route for operator-related endpoints
 app.use("/admins", adminRouter); // Route for admin-related endpoints
+app.use("/buses", busRouter); // Route for operator bus
 
 
 //listen to port 5000

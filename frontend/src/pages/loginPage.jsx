@@ -30,7 +30,7 @@ export default function LoginPage() {
       toast.success("Login Successful!");
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("userRole", response.data.user.role);
-      navigate("/"); // Navigate to home
+      navigate("/find-bus"); // Navigate to bus page
       
     } catch (error) {
       if (error.response) {

@@ -69,7 +69,7 @@ export default function HomePage() {
       <div className="max-w-5xl mx-auto px-6 py-20 space-y-28 flex-grow">
         
         {/* 2. About Section - Changed to bg-green-300 */}
-        <div className="flex flex-col md:flex-row gap-12 items-center bg-green-300 p-8 md:p-12 rounded-3xl shadow-xl border border-green-400">
+        <div className="flex flex-col md:flex-row gap-12 items-center bg-green-100 p-8 md:p-12 rounded-3xl shadow-xl border border-green-400">
           <div className="md:w-1/2 space-y-6">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
               eBus Lanka Made Easy <br /> <span className="text-green-800">and Efficient</span>
@@ -102,7 +102,7 @@ export default function HomePage() {
             { count: "50+", label: "Staff" },
             { count: "100+", label: "Routes" }
           ].map((stat, index) => (
-            <div key={index} className="bg-green-300 text-center py-10 rounded-2xl shadow-lg border-b-4 border-green-700 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
+            <div key={index} className="bg-green-100 text-center py-10 rounded-2xl shadow-lg border-b-4 border-green-700 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
               <h3 className="text-4xl font-extrabold text-gray-900 mb-2 drop-shadow-sm">{stat.count}</h3>
               <p className="text-green-900 font-extrabold uppercase tracking-wider text-sm">{stat.label}</p>
             </div>
@@ -118,18 +118,17 @@ export default function HomePage() {
             </p>
           </div>
           <div className="md:w-2/3 grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-gray-100">
-            {/* Inner cards changed to bg-green-300 */}
-            <div className="bg-green-300 p-8 rounded-2xl text-center flex flex-col items-center justify-center hover:bg-green-400 transition-colors shadow-md">
+            <div className="bg-green-100 p-8 rounded-2xl text-center flex flex-col items-center justify-center hover:bg-green-400 transition-colors shadow-md">
               <FaSuitcaseRolling className="text-5xl text-green-900 mb-4" />
               <h3 className="font-bold text-gray-900 mb-2 text-lg">More Choices</h3>
               <p className="text-gray-800 font-medium text-sm">Maximum choices across all routes.</p>
             </div>
-            <div className="bg-green-300 p-8 rounded-2xl text-center flex flex-col items-center justify-center hover:bg-green-400 transition-colors shadow-md">
+            <div className="bg-green-100 p-8 rounded-2xl text-center flex flex-col items-center justify-center hover:bg-green-400 transition-colors shadow-md">
               <FaPhoneAlt className="text-5xl text-green-900 mb-4" />
               <h3 className="font-bold text-gray-900 mb-2 text-lg">24/7 Support</h3>
               <p className="text-gray-800 font-medium text-sm">We help make your journey better.</p>
             </div>
-            <div className="bg-green-300 p-8 rounded-2xl text-center flex flex-col items-center justify-center hover:bg-green-400 transition-colors shadow-md">
+            <div className="bg-green-100 p-8 rounded-2xl text-center flex flex-col items-center justify-center hover:bg-green-400 transition-colors shadow-md">
               <FaDollarSign className="text-5xl text-green-900 mb-4" />
               <h3 className="font-bold text-gray-900 mb-2 text-lg">Best Price</h3>
               <p className="text-gray-800 font-medium text-sm">Always offer the best ticket prices.</p>
@@ -138,7 +137,7 @@ export default function HomePage() {
         </div>
 
         {/* 5. Available Buses Section - Changed to bg-green-300 */}
-        <div className="bg-green-300 p-10 rounded-3xl shadow-xl border border-green-400">
+        <div className="bg-green-100 p-10 rounded-3xl shadow-xl border border-green-400">
           <div className="text-center mb-12">
             <h4 className="text-green-900 font-extrabold uppercase tracking-wider text-sm mb-2">Our Fleet</h4>
             <h2 className="text-4xl font-bold text-gray-900">Available Busses</h2>
@@ -198,7 +197,7 @@ export default function HomePage() {
           </div>
 
           {/* Contact Form (Right Side) - Changed to bg-green-300 */}
-          <div className="md:w-7/12 p-10 md:p-14 bg-green-300">
+          <div className="md:w-7/12 p-10 md:p-14 bg-green-100">
             <h3 className="text-2xl font-bold text-gray-900 mb-8">Send a Message</h3>
             <form ref={form} onSubmit={sendEmail} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

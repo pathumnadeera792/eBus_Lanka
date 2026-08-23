@@ -1,29 +1,30 @@
 import mongoose from "mongoose";
 
-
-
-//create schema
+// Schema Create for Bus Operator
 const operatorSchema = new mongoose.Schema(
     {
         fullName: { type: String, required: true },
-        companyName: { type: String, required: true },
         email: { type: String, required: true, unique: true },
-        brNumber: { type: String, required: true },
         dob: { type: Date },
-        userName: { type: String, required: true, unique: true },
         address: { type: String },
-        password: { type: String, required: true },
         phone: { type: String, required: true },
         gender: { type: String, enum: ['Male', 'Female', 'Other'] },
-        bankAccount: { type: String },
+        companyName: { type: String, required: true },
+        brNumber: { type: String, required: true, unique: true },
+        bankAccountDetails: { type: String, required: true }, 
+        userName: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
+        securityQuestion: { type: String, required: true },
+        answer: { type: String, required: true },
         role: { type: String, default: 'operator' },
-        isApproved: { type: Boolean, default: false } 
+        isBlocked: { type: Boolean, default: false },
+        isApproved: { type: Boolean, default: false }, 
+        image: { type: String },
     },
     { timestamps: true }
 );
 
-
-//create model
+// Model Create
 const Operator = mongoose.model("operators", operatorSchema);
 
 export default Operator;

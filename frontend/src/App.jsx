@@ -5,11 +5,15 @@ import "./App.css";
 // Import pages
 import HomePage from "./pages/homePage";
 import LoginPage from "./pages/loginPage";
-import BusPage from "./pages/busPage";
-import TestPage from "./pages/testPage";
 import ChooseLoginPage from "./pages/chooseLoginPage";
 import AboutPage from "./pages/aboutPage";
 import ContactPage from "./pages/contactPage";
+import RegisterPage from "./pages/registerPage";
+import FindBusPage from "./pages/findBusPage";
+import OperatorDashboard from "./pages/operator/OperatorDashboard";
+import OperatorRegisterPage from "./pages/operator/RegisterPage";
+import OperatorLoginPage from "./pages/operator/LoginPage";
+
 
 
 function App() {
@@ -19,16 +23,19 @@ function App() {
       <Toaster position="top-right" />
       
       {/* Main container with Tailwind CSS */}
-      <div className="w-full h-screen bg-blue-300">
+      <div className="w-full min-h-screen bg-gray-50">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/bus" element={<BusPage />} />
-          <Route path="/test" element={<TestPage />} />
           <Route path="/choose-login" element={<ChooseLoginPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage/>}/>
-        </Routes>
+          <Route path="/register" element={<RegisterPage/>}/>
+          <Route path="/find-bus" element={<FindBusPage/>}/>
+          <Route path="/operator/dashboard" element={<OperatorDashboard />} />
+          <Route path="/operator/register" element={<OperatorRegisterPage />} />
+          <Route path="/operator/login" element={<OperatorLoginPage />} />
+        </Routes> 
       </div>
     </BrowserRouter>
   );

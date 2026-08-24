@@ -34,7 +34,7 @@ export default function AdminSidebar() {
       </div>
 
       {/* Nav Links */}
-      <nav className="flex-grow py-6 space-y-2 px-4">
+      <nav className="grow py-6 space-y-2 px-4">
         {navLinks.map((link) => (
           <Link 
             key={link.name} 
@@ -63,4 +63,4 @@ export default function AdminSidebar() {
       
     </div>
   );
-}
+}<nav className="grow py-6 space-y-2 px-4"></nav>

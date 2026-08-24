@@ -1,24 +1,58 @@
-import React, { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useRef, useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import BusCard from "../components/BusCard";
 import emailjs from "@emailjs/browser";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 // Import Icons
 import { FaSuitcaseRolling, FaPhoneAlt, FaDollarSign, FaMapMarkerAlt, FaEnvelope } from "react-icons/fa";
 
 export default function HomePage() {
   const form = useRef();
+  const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Dummy data for buses
-  const dummyBuses = [
-    { id: 1, numberPlate: "WP NP 1267", price: "1500", name: "Super Line", seats: 51, route: "Colombo - Kandy", date: "Sunday", time: "08:00 AM", type: "AC" },
-    { id: 2, numberPlate: "WP ND 4589", price: "1500", name: "Super Line", seats: 45, route: "Colombo - Kandy", date: "Sunday", time: "08:30 AM", type: "AC" },
-    { id: 3, numberPlate: "WP NA 7823", price: "1500", name: "Super Line", seats: 51, route: "Colombo - Kandy", date: "Sunday", time: "09:00 AM", type: "AC" },
-  ];
+  const [approvedBuses, setApprovedBuses] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check login status and fetch approved buses on page load
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+
+    const fetchApprovedBuses = async () => {
+      try {
+        const response = await axios.get(`${backendUrl}/operators/buses/approved`);
+        if (Array.isArray(response.data)) {
+          // Show up to 3 approved buses on the home page
+          setApprovedBuses(response.data.slice(0, 3)); 
+        }
+      } catch (error) {
+        console.error("Failed to fetch approved buses for home page", error);
+      }
+    };
+
+    fetchApprovedBuses();
+  }, [backendUrl]);
+
+  // Handle View All Buses click with auth check
+  const handleViewAllBuses = () => {
+    const token = localStorage.getItem("token");
+    const userRole = localStorage.getItem("userRole");
+
+    if (!token || userRole !== "passenger") {
+      toast.error("Please login as a passenger to view all buses");
+      navigate("/login");
+      return;
+    }
+    navigate("/find-bus");
+  };
 
   // Function to send email from Home Page
   const sendEmail = async (e) => {
@@ -58,17 +92,27 @@ export default function HomePage() {
           <p className="text-gray-200 text-lg md:text-xl mb-10 max-w-2xl mx-auto font-medium drop-shadow-md">
             Sri Lanka's Pioneer and Number One Online Bus Ticket Booking Platform.
           </p>
-          <Link to="/choose-login">
-            <button className="px-10 py-4 bg-green-600 text-white rounded-full font-bold text-lg hover:bg-green-700 hover:shadow-[0_10px_20px_rgba(22,163,74,0.4)] hover:-translate-y-1 transition-all duration-300">
-              Login to Continue
-            </button>
-          </Link>
+          
+          {/* Dynamic Hero Button: If logged in show "Explore Buses", else show "Login to Continue" */}
+          {isLoggedIn ? (
+            <Link to="/find-bus">
+              <button className="px-10 py-4 bg-green-600 text-white rounded-full font-bold text-lg hover:bg-green-700 hover:shadow-[0_10px_20px_rgba(22,163,74,0.4)] hover:-translate-y-1 transition-all duration-300">
+                Explore Buses Now
+              </button>
+            </Link>
+          ) : (
+            <Link to="/choose-login">
+              <button className="px-10 py-4 bg-green-600 text-white rounded-full font-bold text-lg hover:bg-green-700 hover:shadow-[0_10px_20px_rgba(22,163,74,0.4)] hover:-translate-y-1 transition-all duration-300">
+                Login to Continue
+              </button>
+            </Link>
+          )}
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-20 space-y-28 flex-grow">
         
-        {/* 2. About Section - Changed to bg-green-300 */}
+        {/* 2. About Section */}
         <div className="flex flex-col md:flex-row gap-12 items-center bg-green-100 p-8 md:p-12 rounded-3xl shadow-xl border border-green-400">
           <div className="md:w-1/2 space-y-6">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
@@ -94,7 +138,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 3. Stats Section - Changed to bg-green-300 */}
+        {/* 3. Stats Section */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
             { count: "1500+", label: "Passengers" },
@@ -136,7 +180,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 5. Available Buses Section - Changed to bg-green-300 */}
+        {/* 5. Available Buses Section (Dynamic Approved Buses) */}
         <div className="bg-green-100 p-10 rounded-3xl shadow-xl border border-green-400">
           <div className="text-center mb-12">
             <h4 className="text-green-900 font-extrabold uppercase tracking-wider text-sm mb-2">Our Fleet</h4>
@@ -144,14 +188,21 @@ export default function HomePage() {
             <div className="w-24 h-1 bg-green-700 mx-auto mt-4 rounded-full"></div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {dummyBuses.map((bus) => (
-              <BusCard key={bus.id} bus={bus} />
-            ))}
-          </div>
+          {approvedBuses.length === 0 ? (
+            <div className="text-center py-8 text-gray-700 font-medium">No approved buses available right now.</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {approvedBuses.map((bus) => (
+                <BusCard key={bus._id} bus={bus} />
+              ))}
+            </div>
+          )}
           
           <div className="text-center mt-12">
-            <button className="bg-gray-900 text-white px-10 py-3 rounded-full font-bold hover:bg-black transition-colors shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+            <button 
+              onClick={handleViewAllBuses}
+              className="bg-gray-900 text-white px-10 py-3 rounded-full font-bold hover:bg-black transition-colors shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+            >
               View All Busses
             </button>
           </div>
@@ -196,7 +247,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Contact Form (Right Side) - Changed to bg-green-300 */}
+          {/* Contact Form (Right Side) */}
           <div className="md:w-7/12 p-10 md:p-14 bg-green-100">
             <h3 className="text-2xl font-bold text-gray-900 mb-8">Send a Message</h3>
             <form ref={form} onSubmit={sendEmail} className="space-y-6">

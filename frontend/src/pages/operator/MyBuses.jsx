@@ -18,24 +18,18 @@ export default function MyBuses() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   
-  // departureDates now holds an array of strings
   const [formData, setFormData] = useState({
     busName: "", brNumber: "", routeNo: "", destination: "", departureDates: [],
     departureTime: "", departureLocation: "", arrivalTime: "",
-    capacity: "", type: "Non-AC", amount: "",
+    capacity: "56", type: "Non-AC", amount: "", // Default capacity 56
   });
 
-  // Temporary state for adding a custom date or selecting days
   const [dateInput, setDateInput] = useState("");
-
-  // Table States
   const [myBuses, setMyBuses] = useState([]);
   const [isLoadingBuses, setIsLoadingBuses] = useState(true);
 
-  // Add Bus Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Edit Modal States
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editBusId, setEditBusId] = useState(null);
   const [editImageFile, setEditImageFile] = useState(null);
@@ -44,10 +38,9 @@ export default function MyBuses() {
   const [editFormData, setEditFormData] = useState({
     busName: "", brNumber: "", routeNo: "", destination: "", departureDates: [],
     departureTime: "", departureLocation: "", arrivalTime: "",
-    capacity: "", type: "Non-AC", amount: "", busImage: ""
+    capacity: "56", type: "Non-AC", amount: "", busImage: ""
   });
 
-  // 1. Fetch Operator's Buses on Page Load
   const fetchMyBuses = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -73,12 +66,10 @@ export default function MyBuses() {
     fetchMyBuses();
   }, [navigate, backendUrl]);
 
-  // Handle Add Form Inputs
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Quick Add Date/Day to Array (Add Form)
   const handleAddDate = (val) => {
     if (!val) return;
     if (formData.departureDates.includes(val)) {
@@ -89,7 +80,6 @@ export default function MyBuses() {
     setDateInput("");
   };
 
-  // Remove Date from Array (Add Form)
   const handleRemoveDate = (indexToRemove) => {
     setFormData({
       ...formData,
@@ -97,14 +87,12 @@ export default function MyBuses() {
     });
   };
 
-  // Handle Add Image Selection
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setImageFile(e.target.files[0]);
     }
   };
 
-  // 2. Submit New Bus
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!imageFile) {
@@ -150,7 +138,7 @@ export default function MyBuses() {
       setFormData({
         busName: "", brNumber: "", routeNo: "", destination: "", departureDates: [],
         departureTime: "", departureLocation: "", arrivalTime: "",
-        capacity: "", type: "Non-AC", amount: ""
+        capacity: "56", type: "Non-AC", amount: ""
       });
       setImageFile(null);
       setIsAddModalOpen(false);
@@ -165,7 +153,6 @@ export default function MyBuses() {
     }
   };
 
-  // 3. Delete a Bus
   const handleDelete = async (busId, busName) => {
     if (!window.confirm(`Are you sure you want to delete ${busName}?`)) return;
 
@@ -183,7 +170,6 @@ export default function MyBuses() {
     }
   };
 
-  // --- EDIT BUS FUNCTIONS ---
   const openEditModal = (bus) => {
     setEditBusId(bus._id);
     setEditFormData({
@@ -195,7 +181,7 @@ export default function MyBuses() {
       departureTime: bus.departureTime,
       departureLocation: bus.departureLocation,
       arrivalTime: bus.arrivalTime,
-      capacity: bus.capacity,
+      capacity: bus.capacity || 56,
       type: bus.type,
       amount: bus.amount,
       busImage: bus.busImage
@@ -341,7 +327,7 @@ export default function MyBuses() {
                           <div className="text-gray-500 text-xs mt-1">Reg: {bus.brNumber} | Type: {bus.type}</div>
                         </td>
                         <td className="p-4">
-                          <div className="font-semibold text-gray-700">{bus.departureLocation} $\rightarrow$ {bus.destination}</div>
+                          <div className="font-semibold text-gray-700">{bus.departureLocation} → {bus.destination}</div>
                           <div className="text-gray-500 text-xs mt-1">Route: {bus.routeNo} | {bus.departureTime}</div>
                         </td>
                         <td className="p-4">
@@ -430,7 +416,21 @@ export default function MyBuses() {
                     <input type="text" name="destination" required value={formData.destination} onChange={handleChange} placeholder="e.g. Kandy" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 outline-none transition" />
                   </div>
 
-                  {/* Multiple Dates / Schedule Input Section */}
+                  {/* Seat Capacity Select (56 or 46) */}
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Seat Capacity</label>
+                    <select name="capacity" required value={formData.capacity} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 outline-none transition bg-white">
+                      <option value="56">56 Seats (2x3 Layout)</option>
+                      <option value="46">46 Seats (2x2 Layout)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Ticket Price (LKR)</label>
+                    <input type="number" name="amount" required min="1" value={formData.amount} onChange={handleChange} placeholder="e.g. 1500" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 outline-none transition" />
+                  </div>
+
+                  {/* Departure Schedule Input Section */}
                   <div className="md:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <label className="block text-sm font-bold text-gray-700 mb-2">Departure Schedule (Days / Dates)</label>
                     
@@ -461,7 +461,6 @@ export default function MyBuses() {
                       </button>
                     </div>
 
-                    {/* Display added dates/schedules pills */}
                     <div className="flex flex-wrap gap-2 mt-3">
                       {formData.departureDates.map((item, index) => (
                         <span key={index} className="inline-flex items-center gap-1 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
@@ -482,14 +481,6 @@ export default function MyBuses() {
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">Estimated Arrival Time</label>
                     <input type="time" name="arrivalTime" required value={formData.arrivalTime} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 outline-none transition" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Passenger Capacity</label>
-                    <input type="number" name="capacity" required min="1" value={formData.capacity} onChange={handleChange} placeholder="e.g. 54" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 outline-none transition" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Ticket Price (LKR)</label>
-                    <input type="number" name="amount" required min="1" value={formData.amount} onChange={handleChange} placeholder="e.g. 1500" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 outline-none transition" />
                   </div>
                 </div>
 
@@ -573,7 +564,19 @@ export default function MyBuses() {
                     <input type="text" name="destination" required value={editFormData.destination} onChange={handleEditChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" />
                   </div>
 
-                  {/* Edit Multiple Dates Section */}
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Seat Capacity</label>
+                    <select name="capacity" required value={editFormData.capacity} onChange={handleEditChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition bg-white">
+                      <option value="56">56 Seats (2x3 Layout)</option>
+                      <option value="46">46 Seats (2x2 Layout)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Ticket Price (LKR)</label>
+                    <input type="number" name="amount" required min="1" value={editFormData.amount} onChange={handleEditChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" />
+                  </div>
+
                   <div className="md:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <label className="block text-sm font-bold text-gray-700 mb-2">Departure Schedule (Days / Dates)</label>
                     
@@ -621,14 +624,6 @@ export default function MyBuses() {
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">Estimated Arrival Time</label>
                     <input type="time" name="arrivalTime" required value={editFormData.arrivalTime} onChange={handleEditChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Passenger Capacity</label>
-                    <input type="number" name="capacity" required min="1" value={editFormData.capacity} onChange={handleEditChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Ticket Price (LKR)</label>
-                    <input type="number" name="amount" required min="1" value={editFormData.amount} onChange={handleEditChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" />
                   </div>
                 </div>
 

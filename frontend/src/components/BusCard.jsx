@@ -1,7 +1,24 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast"; // Imported toast to fix the issue
 import { FaBus, FaCalendarAlt, FaClock, FaUsers, FaTag } from "react-icons/fa";
 
 export default function BusCard({ bus }) {
+  const navigate = useNavigate();
+
+  // Book Seat Click Handler with Auth Check and Toast
+  const handleBookClick = () => {
+    const token = localStorage.getItem("token");
+    const userRole = localStorage.getItem("userRole");
+
+    if (!token || userRole !== "passenger") {
+      toast.error("Please login as a passenger to book seats");
+      navigate("/login");
+      return;
+    }
+    navigate("/reservation", { state: { bus } });
+  };
+
   return (
     <div className="bg-slate-900 rounded-xl overflow-hidden shadow-lg border border-slate-800 text-white flex flex-col justify-between hover:scale-[1.01] transition-transform duration-300">
       
@@ -96,7 +113,7 @@ export default function BusCard({ bus }) {
         {/* Book Button */}
         <div className="pt-2">
           <button 
-            onClick={() => alert(`Booking feature for ${bus.busName} coming soon!`)}
+            onClick={handleBookClick}
             className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-lg transition shadow text-center block text-sm"
           >
             Book Seat

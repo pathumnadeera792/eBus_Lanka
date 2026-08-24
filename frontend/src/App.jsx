@@ -10,6 +10,9 @@ import AboutPage from "./pages/aboutPage";
 import ContactPage from "./pages/contactPage";
 import RegisterPage from "./pages/registerPage";
 import FindBusPage from "./pages/findBusPage";
+import Reservation from "./pages/Reservation";
+import ChooseSignUpPage from "./pages/ChooseSignUpPage";
+import PassengerReservations from "./pages/PassengerReservations";
 
 //operator
 import OperatorDashboard from "./pages/operator/OperatorDashboard";
@@ -41,6 +44,9 @@ function App() {
           <Route path="/contact" element={<ContactPage/>}/>
           <Route path="/register" element={<RegisterPage/>}/>
           <Route path="/find-bus" element={<FindBusPage/>}/>
+          <Route path="/reservation" element={<Reservation />} />
+          <Route path="/choose-signup" element={<ChooseSignUpPage />} />
+          <Route path="/passenger-reservations" element={<PassengerReservations />} />
 
           {/* Operator Routes */}
           <Route path="/operator/dashboard" element={<OperatorDashboard />} />

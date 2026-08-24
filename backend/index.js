@@ -5,21 +5,18 @@ import passengerRouter from "./routers/passengerRouter.js";
 import operatorRouter from "./routers/operatorRouter.js";
 import adminRouter from "./routers/adminRouter.js";
 import busRouter from "./routers/busRouter.js";
+import bookingRouter from "./routers/bookingRouter.js"; 
 import jwt from "jsonwebtoken";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
 
-
 const app = express();
-
-
 
 //body parser middleware
 app.use(bodyParser.json());
 
 app.use(cors()); // Enable CORS for all routes
-
 
 //middleware to verify JWT token
 app.use(
@@ -32,7 +29,7 @@ app.use(
         if (err) {
           res.status(403).json({
             message: "You are not authorized to access this resource"
-          })
+          });
         } else {
           req.passenger = decoded; //res the decoded token to the request object
           next();
@@ -44,7 +41,6 @@ app.use(
   }
 )
 
-
 //connect to mongodb
 const connectionString = process.env.MONGODB_URI;
 mongoose.connect(connectionString).then(
@@ -54,14 +50,11 @@ mongoose.connect(connectionString).then(
     console.log("Error connecting to MongoDB");
 })
 
-
-
-
 app.use("/passengers", passengerRouter); // Route for passenger-related endpoints
 app.use("/operators", operatorRouter); // Route for operator-related endpoints
 app.use("/admins", adminRouter); // Route for admin-related endpoints
-app.use("/operators/buses", busRouter); // Route for operater bus
-
+app.use("/operators/buses", busRouter); // Route for operator bus
+app.use("/api/bookings", bookingRouter); // Route for bookings
 
 //listen to port 5000
 app.listen(5000, () => {

@@ -53,7 +53,7 @@ export default function Navbar() {
       </Link>
 
       {/* Center Navigation Links (Hidden on mobile screens) */}
-      <div className="hidden md:flex gap-8 font-medium text-gray-600">
+      <div className="hidden md:flex gap-8 font-medium text-gray-600 items-center">
         <Link to="/" className="hover:text-green-600 transition duration-300">
           Home
         </Link>
@@ -63,6 +63,18 @@ export default function Navbar() {
         <Link to="/contact" className="hover:text-green-600 transition duration-300">
           Contact
         </Link>
+
+        {/* Show these links ONLY when user is logged in */}
+        {isLoggedIn && (
+          <>
+            <Link to="/find-bus" className="hover:text-green-600 transition duration-300 font-semibold text-gray-600">
+              Buses
+            </Link>
+            <Link to="/passenger-reservations" className="hover:text-green-600 transition duration-300 font-semibold text-gray-600">
+              Bookings
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Right Side - Dynamic Buttons */}
@@ -82,7 +94,7 @@ export default function Navbar() {
           </div>
         ) : (
           // If NOT logged in: Show Sign Up button
-          <Link to="/register">
+          <Link to="/choose-signup">
             <button className="px-6 py-2 text-white bg-green-600 rounded-full font-semibold shadow-md hover:bg-green-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
               Sign Up
             </button>

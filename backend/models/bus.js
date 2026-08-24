@@ -6,9 +6,16 @@ const busSchema = new mongoose.Schema(
         brNumber: { type: String, required: true }, 
         routeNo: { type: String, required: true },
         departureDates: { type: String, required: true }, 
-        date: { type: Date }, 
+        departureDates: { 
+             type: [String], // Changed from String to Array of Strings for multiple dates/days
+             required: true 
+             },destination: { 
+                type: String, 
+                required: true 
+             }, 
         departureTime: { type: String, required: true },
         departureLocation: { type: String, required: true },
+        destination: { type: String, required: true },
         arrivalTime: { type: String, required: true },
         capacity: { type: Number, required: true }, 
         type: { type: String, enum: ['AC', 'Non-AC', 'Luxury'], required: true },

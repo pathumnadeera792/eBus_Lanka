@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { FaBus, FaUpload, FaPlusCircle, FaTrash, FaCheckCircle, FaClock, FaEdit, FaTimes } from "react-icons/fa";
+import { FaBus, FaUpload, FaPlusCircle, FaTrash, FaCheckCircle, FaClock, FaEdit, FaTimes, FaCalendarPlus } from "react-icons/fa";
 
 // Import supabase client
 import { supabase } from "../../supabase"; 
@@ -17,17 +17,22 @@ export default function MyBuses() {
   // Form States (For Adding New Bus)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+  
+  // departureDates now holds an array of strings
   const [formData, setFormData] = useState({
-    busName: "", brNumber: "", routeNo: "", departureDates: "",
+    busName: "", brNumber: "", routeNo: "", destination: "", departureDates: [],
     departureTime: "", departureLocation: "", arrivalTime: "",
     capacity: "", type: "Non-AC", amount: "",
   });
+
+  // Temporary state for adding a custom date or selecting days
+  const [dateInput, setDateInput] = useState("");
 
   // Table States
   const [myBuses, setMyBuses] = useState([]);
   const [isLoadingBuses, setIsLoadingBuses] = useState(true);
 
-  // Add Bus Modal State (NEW)
+  // Add Bus Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Edit Modal States
@@ -35,8 +40,9 @@ export default function MyBuses() {
   const [editBusId, setEditBusId] = useState(null);
   const [editImageFile, setEditImageFile] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [editDateInput, setEditDateInput] = useState("");
   const [editFormData, setEditFormData] = useState({
-    busName: "", brNumber: "", routeNo: "", departureDates: "",
+    busName: "", brNumber: "", routeNo: "", destination: "", departureDates: [],
     departureTime: "", departureLocation: "", arrivalTime: "",
     capacity: "", type: "Non-AC", amount: "", busImage: ""
   });
@@ -72,6 +78,25 @@ export default function MyBuses() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Quick Add Date/Day to Array (Add Form)
+  const handleAddDate = (val) => {
+    if (!val) return;
+    if (formData.departureDates.includes(val)) {
+      toast.error("This date/day is already added!");
+      return;
+    }
+    setFormData({ ...formData, departureDates: [...formData.departureDates, val] });
+    setDateInput("");
+  };
+
+  // Remove Date from Array (Add Form)
+  const handleRemoveDate = (indexToRemove) => {
+    setFormData({
+      ...formData,
+      departureDates: formData.departureDates.filter((_, index) => index !== indexToRemove)
+    });
+  };
+
   // Handle Add Image Selection
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -86,12 +111,15 @@ export default function MyBuses() {
       toast.error("Please select a bus image!");
       return;
     }
+    if (formData.departureDates.length === 0) {
+      toast.error("Please add at least one departure date or schedule (e.g. Daily)!");
+      return;
+    }
 
     setIsSubmitting(true);
     const toastId = toast.loading("Uploading image and saving bus details...");
 
     try {
-      // Upload Image to Supabase
       const fileExt = imageFile.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `${fileName}`; 
@@ -102,11 +130,9 @@ export default function MyBuses() {
 
       if (uploadError) throw new Error("Image upload failed: " + uploadError.message);
 
-      // Get Public URL
       const { data: publicUrlData } = supabase.storage.from('bus-images').getPublicUrl(filePath);
       const imageUrl = publicUrlData.publicUrl;
 
-      // Send to MongoDB
       const token = localStorage.getItem("token");
       const busDataToSave = {
         ...formData,
@@ -121,16 +147,14 @@ export default function MyBuses() {
 
       toast.success("Bus added successfully! Waiting for Admin Approval.", { id: toastId });
       
-      // Reset Form and Close Modal
       setFormData({
-        busName: "", brNumber: "", routeNo: "", departureDates: "",
+        busName: "", brNumber: "", routeNo: "", destination: "", departureDates: [],
         departureTime: "", departureLocation: "", arrivalTime: "",
         capacity: "", type: "Non-AC", amount: ""
       });
       setImageFile(null);
       setIsAddModalOpen(false);
 
-      // Refresh the bus list
       fetchMyBuses();
 
     } catch (error) {
@@ -160,15 +184,14 @@ export default function MyBuses() {
   };
 
   // --- EDIT BUS FUNCTIONS ---
-
-  // Open Edit Modal and set data
   const openEditModal = (bus) => {
     setEditBusId(bus._id);
     setEditFormData({
       busName: bus.busName,
       brNumber: bus.brNumber,
       routeNo: bus.routeNo,
-      departureDates: bus.departureDates,
+      destination: bus.destination || "",
+      departureDates: Array.isArray(bus.departureDates) ? bus.departureDates : [bus.departureDates],
       departureTime: bus.departureTime,
       departureLocation: bus.departureLocation,
       arrivalTime: bus.arrivalTime,
@@ -181,19 +204,33 @@ export default function MyBuses() {
     setIsEditModalOpen(true);
   };
 
-  // Handle Edit Form Inputs
   const handleEditChange = (e) => {
     setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
   };
 
-  // Handle Edit Image Selection
+  const handleEditAddDate = (val) => {
+    if (!val) return;
+    if (editFormData.departureDates.includes(val)) {
+      toast.error("Already added!");
+      return;
+    }
+    setEditFormData({ ...editFormData, departureDates: [...editFormData.departureDates, val] });
+    setEditDateInput("");
+  };
+
+  const handleEditRemoveDate = (indexToRemove) => {
+    setEditFormData({
+      ...editFormData,
+      departureDates: editFormData.departureDates.filter((_, index) => index !== indexToRemove)
+    });
+  };
+
   const handleEditImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setEditImageFile(e.target.files[0]);
     }
   };
 
-  // Submit Edited Bus
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     setIsUpdating(true);
@@ -259,7 +296,6 @@ export default function MyBuses() {
 
         <div className="p-8 flex flex-col gap-8 max-w-6xl mx-auto w-full">
           
-          {/* Top Bar with Title and 'Add New Bus' Button */}
           <div className="flex items-center justify-between bg-white p-6 rounded-2xl shadow-md border border-gray-100">
             <div>
               <h1 className="text-2xl font-extrabold text-gray-800">My Registered Buses</h1>
@@ -273,7 +309,6 @@ export default function MyBuses() {
             </button>
           </div>
 
-          {/* --- MY REGISTERED BUSES TABLE SECTION --- */}
           <div className="bg-white shadow-lg rounded-2xl p-8 border border-gray-100">
             <div className="overflow-x-auto rounded-lg border border-gray-200">
               <table className="w-full text-left border-collapse">
@@ -306,8 +341,8 @@ export default function MyBuses() {
                           <div className="text-gray-500 text-xs mt-1">Reg: {bus.brNumber} | Type: {bus.type}</div>
                         </td>
                         <td className="p-4">
-                          <div className="font-semibold text-gray-700">Route: {bus.routeNo}</div>
-                          <div className="text-gray-500 text-xs mt-1">{bus.departureLocation} - {bus.departureTime}</div>
+                          <div className="font-semibold text-gray-700">{bus.departureLocation} $\rightarrow$ {bus.destination}</div>
+                          <div className="text-gray-500 text-xs mt-1">Route: {bus.routeNo} | {bus.departureTime}</div>
                         </td>
                         <td className="p-4">
                           {bus.isApproved ? (
@@ -348,7 +383,7 @@ export default function MyBuses() {
 
         </div>
 
-        {/* --- ADD BUS MODAL (Opens when clicking 'Add New Bus' button) --- */}
+        {/* --- ADD BUS MODAL --- */}
         {isAddModalOpen && (
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
             <div className="bg-white shadow-2xl rounded-2xl w-full max-w-4xl p-8 relative max-h-[95vh] overflow-y-auto">
@@ -387,13 +422,59 @@ export default function MyBuses() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Departure Location</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Departure Location (From)</label>
                     <input type="text" name="departureLocation" required value={formData.departureLocation} onChange={handleChange} placeholder="e.g. Colombo" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 outline-none transition" />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Departure Dates</label>
-                    <input type="text" name="departureDates" required value={formData.departureDates} onChange={handleChange} placeholder="e.g. Daily" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 outline-none transition" />
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Destination (To)</label>
+                    <input type="text" name="destination" required value={formData.destination} onChange={handleChange} placeholder="e.g. Kandy" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 outline-none transition" />
                   </div>
+
+                  {/* Multiple Dates / Schedule Input Section */}
+                  <div className="md:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Departure Schedule (Days / Dates)</label>
+                    
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <button type="button" onClick={() => handleAddDate("Daily")} className="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-200">+ Daily</button>
+                      <button type="button" onClick={() => handleAddDate("Monday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Monday</button>
+                      <button type="button" onClick={() => handleAddDate("Tuesday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Tuesday</button>
+                      <button type="button" onClick={() => handleAddDate("Wednesday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Wednesday</button>
+                      <button type="button" onClick={() => handleAddDate("Thursday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Thursday</button>
+                      <button type="button" onClick={() => handleAddDate("Friday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Friday</button>
+                      <button type="button" onClick={() => handleAddDate("Saturday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Saturday</button>
+                      <button type="button" onClick={() => handleAddDate("Sunday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Sunday</button>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <input 
+                        type="date" 
+                        value={dateInput} 
+                        onChange={(e) => setDateInput(e.target.value)} 
+                        className="px-3 py-2 rounded-lg border border-gray-300 bg-white outline-none text-sm"
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => handleAddDate(dateInput)}
+                        className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-1 hover:bg-gray-900"
+                      >
+                        <FaCalendarPlus /> Add Date
+                      </button>
+                    </div>
+
+                    {/* Display added dates/schedules pills */}
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {formData.departureDates.map((item, index) => (
+                        <span key={index} className="inline-flex items-center gap-1 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                          {item}
+                          <button type="button" onClick={() => handleRemoveDate(index)} className="hover:text-red-200 ml-1">×</button>
+                        </span>
+                      ))}
+                      {formData.departureDates.length === 0 && (
+                        <span className="text-xs text-red-500">No schedule added yet. Please add at least one schedule.</span>
+                      )}
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">Departure Time</label>
                     <input type="time" name="departureTime" required value={formData.departureTime} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 outline-none transition" />
@@ -484,13 +565,55 @@ export default function MyBuses() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Departure Location</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Departure Location (From)</label>
                     <input type="text" name="departureLocation" required value={editFormData.departureLocation} onChange={handleEditChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Departure Dates</label>
-                    <input type="text" name="departureDates" required value={editFormData.departureDates} onChange={handleEditChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" />
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Destination (To)</label>
+                    <input type="text" name="destination" required value={editFormData.destination} onChange={handleEditChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" />
                   </div>
+
+                  {/* Edit Multiple Dates Section */}
+                  <div className="md:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Departure Schedule (Days / Dates)</label>
+                    
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <button type="button" onClick={() => handleEditAddDate("Daily")} className="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-200">+ Daily</button>
+                      <button type="button" onClick={() => handleEditAddDate("Monday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Monday</button>
+                      <button type="button" onClick={() => handleEditAddDate("Tuesday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Tuesday</button>
+                      <button type="button" onClick={() => handleEditAddDate("Wednesday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Wednesday</button>
+                      <button type="button" onClick={() => handleEditAddDate("Thursday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Thursday</button>
+                      <button type="button" onClick={() => handleEditAddDate("Friday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Friday</button>
+                      <button type="button" onClick={() => handleEditAddDate("Saturday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Saturday</button>
+                      <button type="button" onClick={() => handleEditAddDate("Sunday")} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-200">+ Sunday</button>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <input 
+                        type="date" 
+                        value={editDateInput} 
+                        onChange={(e) => setEditDateInput(e.target.value)} 
+                        className="px-3 py-2 rounded-lg border border-gray-300 bg-white outline-none text-sm"
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => handleEditAddDate(editDateInput)}
+                        className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-1 hover:bg-gray-900"
+                      >
+                        <FaCalendarPlus /> Add Date
+                      </button>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {editFormData.departureDates.map((item, index) => (
+                        <span key={index} className="inline-flex items-center gap-1 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                          {item}
+                          <button type="button" onClick={() => handleEditRemoveDate(index)} className="hover:text-red-200 ml-1">×</button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">Departure Time</label>
                     <input type="time" name="departureTime" required value={editFormData.departureTime} onChange={handleEditChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" />
@@ -509,7 +632,6 @@ export default function MyBuses() {
                   </div>
                 </div>
 
-                {/* Edit Image Section */}
                 <div className="mt-4">
                   <label className="block text-sm font-bold text-gray-700 mb-2">Update Bus Image (Optional)</label>
                   <div className="flex items-center gap-4">

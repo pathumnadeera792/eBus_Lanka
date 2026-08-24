@@ -1,6 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { addBus, getOperatorBuses, updateBus, deleteBus } from "../controllers/busController.js";
+import { addBus, getOperatorBuses, updateBus, deleteBus,  getApprovedBuses } from "../controllers/busController.js";
 
 const busRouter = express.Router();
 
@@ -25,6 +25,7 @@ const verifyToken = (req, res, next) => {
 busRouter.post("/add", verifyToken, addBus); 
 busRouter.get("/my-buses", verifyToken, getOperatorBuses); 
 busRouter.put("/update/:id", verifyToken, updateBus); 
-busRouter.delete("/delete/:id", verifyToken, deleteBus); 
+busRouter.delete("/delete/:id", verifyToken, deleteBus);
+busRouter.get("/approved", getApprovedBuses);
 
 export default busRouter;

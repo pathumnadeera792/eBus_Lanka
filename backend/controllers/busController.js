@@ -74,3 +74,14 @@ export const deleteBus = async (req, res) => {
         res.status(500).json({ message: "Failed to delete bus", error: error.message });
     }
 };
+
+// Get all approved buses for passengers to search
+export const getApprovedBuses = async (req, res) => {
+    try {
+        const buses = await Bus.find({ isApproved: true });
+        res.status(200).json(buses);
+    } catch (error) {
+        console.error("Fetch Approved Buses Error:", error);
+        res.status(500).json({ message: "Failed to fetch approved buses", error: error.message });
+    }
+};

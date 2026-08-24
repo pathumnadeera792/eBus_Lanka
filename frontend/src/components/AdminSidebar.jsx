@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaThLarge, FaUserPlus, FaBus, FaUserTie, FaUsers, FaMapMarkerAlt, FaFileAlt, FaSignOutAlt } from 'react-icons/fa';
+// Imported FaBusAlt for the new Manage Buses link
+import { FaThLarge, FaUserPlus, FaBus, FaBusAlt, FaUserTie, FaUsers, FaMapMarkerAlt, FaFileAlt, FaSignOutAlt } from 'react-icons/fa';
 
 export default function AdminSidebar() {
   const location = useLocation();
@@ -11,10 +12,12 @@ export default function AdminSidebar() {
     window.location.href = "/"; 
   };
 
+  // Added 'Manage Buses' to the navigation links
   const navLinks = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: <FaThLarge /> },
     { name: 'Op Requests', path: '/admin/operator-requests', icon: <FaUserPlus /> },
-    { name: 'Bus Requests', path: '/admin/bus-requests', icon: <FaBus /> },
+    { name: 'Bus Requests', path: '/admin/busRequests', icon: <FaBus /> },
+    { name: 'Manage Buses', path: '/admin/manage-buses', icon: <FaBusAlt /> }, // New link added here
     { name: 'Operators', path: '/admin/operators', icon: <FaUserTie /> },
     { name: 'Passengers', path: '/admin/passengers', icon: <FaUsers /> },
     { name: 'Routes', path: '/admin/routes', icon: <FaMapMarkerAlt /> },
@@ -23,6 +26,7 @@ export default function AdminSidebar() {
 
   return (
     <div className="w-64 bg-zinc-800 min-h-screen flex flex-col">
+      
       {/* Profile Area */}
       <div className="p-6 flex items-center gap-3 border-b border-zinc-700">
         <FaUserTie className="text-4xl text-white" />
@@ -56,6 +60,7 @@ export default function AdminSidebar() {
             <span>Logout</span>
           </button>
       </div>
+      
     </div>
   );
 }

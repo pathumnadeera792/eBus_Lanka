@@ -20,6 +20,8 @@ import MyBuses from "./pages/operator/MyBuses";
 //admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import OperatorRequests from "./pages/admin/OperatorRequests";
+import BusRequests from "./pages/admin/BusRequests";
+import ManageBuses from "./pages/admin/ManageBuses";
 
 
 
@@ -49,6 +51,10 @@ function App() {
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/operator-requests" element={<OperatorRequests />} />
+          <Route path="/admin/busRequests" element={<BusRequests />} />
+          <Route path="/admin/manage-buses" element={<ManageBuses />} />
+
+
         </Routes> 
       </div>
     </BrowserRouter>

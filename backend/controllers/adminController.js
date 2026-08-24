@@ -1,5 +1,6 @@
 import Admin from "../models/Admin.js";
 import Operator from "../models/Operator.js"; // Operator model import for approving operators
+import Bus from "../models/bus.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -105,5 +106,62 @@ export async function rejectOperator(req, res) {
         res.status(200).json({ message: "Operator rejected successfully" });
     } catch (error) {
         res.status(500).json({ message: "Error rejecting operator", error: error.message });
+    }
+}
+
+// 6. Get Pending Buses (isApproved: false)
+export async function getPendingBuses(req, res) {
+    try {
+        // Find buses and 'populate' to get operator details (name, company) linked to the bus
+        const pendingBuses = await Bus.find({ isApproved: false })
+            .populate("operatorId", "fullName companyName email phone"); 
+            
+        res.status(200).json(pendingBuses);
+    } catch (error) {
+        console.error("Error fetching pending buses:", error);
+        res.status(500).json({ message: "Error fetching buses", error: error.message });
+    }
+}
+
+// 7. Approve Bus
+export async function approveBus(req, res) {
+    try {
+        const busId = req.params.id;
+        const updatedBus = await Bus.findByIdAndUpdate(
+            busId, 
+            { isApproved: true }, 
+            { new: true }
+        );
+
+        if (!updatedBus) return res.status(404).json({ message: "Bus not found" });
+        res.status(200).json({ message: "Bus approved successfully", bus: updatedBus });
+    } catch (error) {
+        res.status(500).json({ message: "Error approving bus", error: error.message });
+    }
+}
+
+// 8. Reject and Delete Bus
+export async function rejectBus(req, res) {
+    try {
+        const busId = req.params.id;
+        const deletedBus = await Bus.findByIdAndDelete(busId);
+        
+        if (!deletedBus) return res.status(404).json({ message: "Bus not found" });
+        res.status(200).json({ message: "Bus rejected successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error rejecting bus", error: error.message });
+    }
+}
+// 9. Get All Buses (for Super Admin Manage Buses page)
+export async function getAllBuses(req, res) {
+    try {
+        // isApproved: true තියෙන (හෝ ඔක්කොම ඕන නම් ඒ filter එක අයින් කරන්න) බස් ගන්නවා
+        const allBuses = await Bus.find({ isApproved: true }) 
+            .populate("operatorId", "fullName companyName email phone"); 
+            
+        res.status(200).json(allBuses);
+    } catch (error) {
+        console.error("Error fetching all buses:", error);
+        res.status(500).json({ message: "Error fetching buses", error: error.message });
     }
 }

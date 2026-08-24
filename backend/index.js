@@ -14,6 +14,7 @@ dotenv.config();
 const app = express();
 
 
+
 //body parser middleware
 app.use(bodyParser.json());
 
@@ -59,7 +60,7 @@ mongoose.connect(connectionString).then(
 app.use("/passengers", passengerRouter); // Route for passenger-related endpoints
 app.use("/operators", operatorRouter); // Route for operator-related endpoints
 app.use("/admins", adminRouter); // Route for admin-related endpoints
-app.use("/buses", busRouter); // Route for operator bus
+app.use("/operators/buses", busRouter); // Route for operater bus
 
 
 //listen to port 5000

@@ -48,14 +48,17 @@ export default function OperatorRequests() {
   // Approve function
   const handleApprove = async (operatorId, operatorName) => {
     try {
-      await axios.put(`${backendUrl}/admins/operators/approve/${operatorId}`);
+      const response = await axios.put(`${backendUrl}/admins/operators/approve/${operatorId}`);
       toast.success(`${operatorName} approved successfully!`);
       setPendingOperators(prev => prev.filter(op => op._id !== operatorId));
       
       // Close modal if open
       if(selectedOperator && selectedOperator._id === operatorId) setSelectedOperator(null);
     } catch (error) {
-      toast.error("Failed to approve operator");
+      // Backend error
+      const errorMsg = error.response?.data?.message || error.message || "Failed to approve";
+      toast.error(`Error: ${errorMsg}`);
+      console.error("Approve error Details:", error);
     }
   };
 
@@ -64,14 +67,17 @@ export default function OperatorRequests() {
     if(!window.confirm(`Are you sure you want to reject ${operatorName}?`)) return;
 
     try {
-      await axios.delete(`${backendUrl}/admins/operators/reject/${operatorId}`);
+      const response = await axios.delete(`${backendUrl}/admins/operators/reject/${operatorId}`);
       toast.success(`${operatorName} rejected!`);
       setPendingOperators(prev => prev.filter(op => op._id !== operatorId));
       
       // Close modal if open
       if(selectedOperator && selectedOperator._id === operatorId) setSelectedOperator(null);
     } catch (error) {
-      toast.error("Failed to reject operator");
+      // Backend error
+      const errorMsg = error.response?.data?.message || error.message || "Failed to reject";
+      toast.error(`Error: ${errorMsg}`);
+      console.error("Reject error Details:", error);
     }
   };
 

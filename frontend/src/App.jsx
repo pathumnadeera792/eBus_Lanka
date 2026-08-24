@@ -15,10 +15,12 @@ import FindBusPage from "./pages/findBusPage";
 import OperatorDashboard from "./pages/operator/OperatorDashboard";
 import OperatorRegisterPage from "./pages/operator/RegisterPage";
 import OperatorLoginPage from "./pages/operator/LoginPage";
+import MyBuses from "./pages/operator/MyBuses";
 
 //admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import OperatorRequests from "./pages/admin/OperatorRequests";
+
 
 
 function App() {
@@ -42,6 +44,7 @@ function App() {
           <Route path="/operator/dashboard" element={<OperatorDashboard />} />
           <Route path="/operator/register" element={<OperatorRegisterPage />} />
           <Route path="/operator/login" element={<OperatorLoginPage />} />
+          <Route path="/operator/buses" element={<MyBuses />} />
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />

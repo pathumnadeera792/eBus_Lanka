@@ -1,4 +1,5 @@
 import Bus from "../models/bus.js";
+import Operator from "../models/Operator.js"; // Operator model එක මෙතනට import කරගන්න ඕනේ
 
 // 1. Add a new Bus
 export const addBus = async (req, res) => {
@@ -44,7 +45,7 @@ export const updateBus = async (req, res) => {
         const busId = req.params.id;
         const updatedData = req.body;
         
-        const bus = await Bus.findByIdAndUpdate(busId, updatedData, { new: true });
+        const bus = await Bus.findByIdAndUpdate(busId, updatedData, { returnDocument: 'after' });
         
         if (!bus) {
             return res.status(404).json({ message: "Bus not found" });
@@ -75,10 +76,19 @@ export const deleteBus = async (req, res) => {
     }
 };
 
-// Get all approved buses for passengers to search
+// Get all approved buses for passengers to search (Filters out blocked operators' buses)
 export const getApprovedBuses = async (req, res) => {
     try {
-        const buses = await Bus.find({ isApproved: true });
+        // 1. Find all operators who are NOT blocked (isBlocked: false or undefined)
+        const activeOperators = await Operator.find({ isBlocked: { $ne: true } }).select('_id');
+        const activeOperatorIds = activeOperators.map(op => op._id);
+
+        // 2. Fetch approved buses belonging ONLY to active (non-blocked) operators
+        const buses = await Bus.find({ 
+            isApproved: true,
+            operatorId: { $in: activeOperatorIds } 
+        });
+
         res.status(200).json(buses);
     } catch (error) {
         console.error("Fetch Approved Buses Error:", error);

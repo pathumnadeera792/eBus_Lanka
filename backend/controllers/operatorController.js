@@ -1,4 +1,5 @@
 import Operator from "../models/Operator.js";
+import Bus from "../models/bus.js"; // Bus model එක මෙතනට import කරගන්න ඕනේ
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -22,7 +23,6 @@ export const createOperator = async (req, res) => {
             answer: req.body.answer,
             
             password: passwordHash,
-            // isApproved admin approval
             isApproved: false 
         };
 
@@ -34,7 +34,7 @@ export const createOperator = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Operator Registration Error: ", error); // Backend terminal find error
+        console.error("Operator Registration Error: ", error);
         res.status(500).json({
             message: "Error registering operator",
             error: error.message
@@ -45,11 +45,9 @@ export const createOperator = async (req, res) => {
 // Login Operator (Now using Email)
 export const loginOperator = async (req, res) => {
     try {
-        // Frontend email
         const email = req.body.email; 
         const password = req.body.password;
 
-        // email find by db
         const operator = await Operator.findOne({ email: email });
 
         if (!operator) {
@@ -63,6 +61,14 @@ export const loginOperator = async (req, res) => {
             return res.status(403).json({
                 message: "Your account is not approved yet. Please contact Super Admin.",
                 isApproved: false
+            });
+        }
+
+        // --- Check if Operator is Blocked ---
+        if (operator.isBlocked) {
+            return res.status(403).json({
+                message: "Your account has been blocked by Super Admin. Please contact support.",
+                isBlocked: true
             });
         }
 
@@ -101,3 +107,77 @@ export const loginOperator = async (req, res) => {
         });
     }
 }
+
+// Get Operator Profile
+export const getOperatorProfile = async (req, res) => {
+    try {
+        const operatorId = req.user?.id || req.user?.operatorId || req.user?._id;
+        const operator = await Operator.findById(operatorId).select("-password");
+        if (!operator) {
+            return res.status(404).json({ message: "Operator not found" });
+        }
+        res.status(200).json(operator);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+// Update Operator Profile
+export const updateOperatorProfile = async (req, res) => {
+    try {
+        const operatorId = req.user?.id || req.user?.operatorId || req.user?._id;
+        const { fullName, email, phone, address } = req.body;
+
+        const updatedOperator = await Operator.findByIdAndUpdate(
+            operatorId,
+            { fullName, email, phone, address },
+            { returnDocument: 'after' }
+        ).select("-password");
+
+        res.status(200).json({ message: "Profile updated successfully", operator: updatedOperator });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to update profile", error: error.message });
+    }
+};
+
+// Get all operators for Admin
+export const getAllOperators = async (req, res) => {
+    try {
+        const operators = await Operator.find().select("-password");
+        res.status(200).json(operators);
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch operators", error: error.message });
+    }
+};
+
+// Toggle Block/Active status for operator
+export const toggleOperatorStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const operator = await Operator.findById(id);
+        if (!operator) return res.status(404).json({ message: "Operator not found" });
+
+        operator.isBlocked = !operator.isBlocked;
+        await operator.save();
+        res.status(200).json({ message: `Operator status updated to ${operator.isBlocked ? "Blocked" : "Active"}`, isBlocked: operator.isBlocked });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to update status", error: error.message });
+    }
+};
+
+// Delete operator and all their buses
+export const deleteOperator = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Delete all buses belonging to this operator
+        await Bus.deleteMany({ operatorId: id });
+
+        // Delete the operator
+        await Operator.findByIdAndDelete(id);
+
+        res.status(200).json({ message: "Operator and associated buses deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to delete operator", error: error.message });
+    }
+};

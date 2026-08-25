@@ -21,6 +21,7 @@ import OperatorRegisterPage from "./pages/operator/RegisterPage";
 import OperatorLoginPage from "./pages/operator/LoginPage";
 import MyBuses from "./pages/operator/MyBuses";
 import OperatorManifest from "./pages/operator/OperatorManifest";
+import OperatorSettings from "./pages/operator/OperatorSettings";
 
 //admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -28,7 +29,8 @@ import OperatorRequests from "./pages/admin/OperatorRequests";
 import BusRequests from "./pages/admin/BusRequests";
 import ManageBuses from "./pages/admin/ManageBuses";
 import AdminReviews from "./pages/admin/AdminReviews";
-
+import AdminPassengers from "./pages/admin/AdminPassengers";
+import AdminOperators from "./pages/admin/AdminOperators";
 
 
 function App() {
@@ -58,6 +60,7 @@ function App() {
           <Route path="/operator/login" element={<OperatorLoginPage />} />
           <Route path="/operator/buses" element={<MyBuses />} />
           <Route path="/operator/OperatorManifest" element={<OperatorManifest />} />
+          <Route path="/operator/settings" element={<OperatorSettings />} />
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -65,6 +68,8 @@ function App() {
           <Route path="/admin/busRequests" element={<BusRequests />} />
           <Route path="/admin/manage-buses" element={<ManageBuses />} />
           <Route path="/admin/reviews" element={<AdminReviews />} />
+          <Route path="/admin/operators" element={<AdminOperators />} />
+          <Route path="/admin/passengers" element={<AdminPassengers />} />
 
 
         </Routes> 

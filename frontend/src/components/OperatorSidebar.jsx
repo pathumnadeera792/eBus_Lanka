@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaThLarge, FaBus, FaClipboardList, FaFileAlt, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaThLarge, FaBus, FaClipboardList, FaCog, FaSignOutAlt } from 'react-icons/fa';
 
 export default function OperatorSidebar() {
   const navigate = useNavigate();
@@ -8,16 +8,13 @@ export default function OperatorSidebar() {
 
   const [operatorName, setOperatorName] = useState("Operator");
 
-  // Fetch operator name from localStorage on load
   useEffect(() => {
-    // Assuming you store user info in localStorage during login
     const storedUser = localStorage.getItem("userName") || localStorage.getItem("fullName");
     if (storedUser) {
       setOperatorName(storedUser);
     }
   }, []);
 
-  // Function to get initials from name (e.g., "Pathum Nadeera" -> "PN")
   const getInitials = (name) => {
     if (!name) return "OP";
     const parts = name.trim().split(" ");
@@ -27,7 +24,6 @@ export default function OperatorSidebar() {
     return name.substring(0, 2).toUpperCase();
   };
 
-  // Handle Logout function
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userRole");
@@ -39,14 +35,12 @@ export default function OperatorSidebar() {
     { name: 'Dashboard', path: '/operator/dashboard', icon: <FaThLarge /> },
     { name: 'My Buses', path: '/operator/buses', icon: <FaBus /> },
     { name: 'Manifest', path: '/operator/OperatorManifest', icon: <FaClipboardList /> },
-    { name: 'Reports', path: '/operator/reports', icon: <FaFileAlt /> },
     { name: 'Setting', path: '/operator/settings', icon: <FaCog /> },
   ];
 
   return (
     <div className="w-64 bg-gray-900 min-h-screen p-6 flex flex-col border-r border-gray-800">
       
-      {/* Profile Area with Initials Avatar */}
       <div className="flex items-center gap-3 pb-6 mb-8 border-b border-gray-800">
         <div className="w-12 h-12 rounded-full bg-green-600 text-white font-bold flex items-center justify-center text-lg shadow-md border-2 border-green-400">
           {getInitials(operatorName)}
@@ -57,7 +51,6 @@ export default function OperatorSidebar() {
         </div>
       </div>
 
-      {/* Navigation Links */}
       <nav className="flex-grow space-y-3">
         {navLinks.map((link) => (
           <Link 
@@ -74,7 +67,6 @@ export default function OperatorSidebar() {
         ))}
       </nav>
 
-      {/* Logout button at the bottom */}
       <button 
         onClick={handleLogout}
         className="flex items-center gap-4 px-4 py-3 rounded-xl font-medium text-red-400 hover:bg-red-950/40 hover:text-red-300 transition duration-200 w-full mt-auto"

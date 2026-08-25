@@ -50,17 +50,24 @@ export function loginPassenger(req, res) {
                     message: "Passenger not found"
                 })
             } else {
+                // --- Check if Passenger is Blocked ---
+                if (passenger.isBlocked) {
+                    return res.status(403).json({
+                        message: "Your account has been blocked by Admin. Please contact support.",
+                        isBlocked: true
+                    });
+                }
+
                 const isPasswordCorrect = bcrypt.compareSync(password, passenger.password)
                 
                 if (isPasswordCorrect) {
-                    // Create JWT token (.env using dotenv package)
                     const token = jwt.sign( {
                             id: passenger._id,
                             fullName: passenger.fullName,
                             userName: passenger.userName,
                             email: passenger.email,
                             role: passenger.role
-                        }, process.env.JWT_SECRET, { expiresIn: "1d" }); // Token expires in 1 day
+                        }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
                     res.json({
                         message: "Login successful",
@@ -90,7 +97,7 @@ export function loginPassenger(req, res) {
 // Get Passenger Profile
 export const getPassengerProfile = async (req, res) => {
     try {
-        const passengerId = req.passenger.id; // req.user වෙනුවට req.passenger පාවිච්චි කරන්න
+        const passengerId = req.passenger.id; 
         const passenger = await Passenger.findById(passengerId).select("-password");
         if (!passenger) {
             return res.status(404).json({ message: "Passenger not found" });
@@ -104,7 +111,7 @@ export const getPassengerProfile = async (req, res) => {
 // Update Passenger Profile
 export const updatePassengerProfile = async (req, res) => {
     try {
-        const passengerId = req.passenger.id; // req.user වෙනුවට req.passenger පාවිච්චි කරන්න
+        const passengerId = req.passenger.id; 
         const { fullName, phone, address } = req.body;
 
         const updatedPassenger = await Passenger.findByIdAndUpdate(
@@ -119,3 +126,38 @@ export const updatePassengerProfile = async (req, res) => {
     }
 };
 
+// Get all passengers for Admin
+export const getAllPassengers = async (req, res) => {
+    try {
+        const passengers = await Passenger.find().select("-password");
+        res.status(200).json(passengers);
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch passengers", error: error.message });
+    }
+};
+
+// Toggle Block/Active status for passenger
+export const togglePassengerStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const passenger = await Passenger.findById(id);
+        if (!passenger) return res.status(404).json({ message: "Passenger not found" });
+
+        passenger.isBlocked = !passenger.isBlocked;
+        await passenger.save();
+        res.status(200).json({ message: `Passenger status updated to ${passenger.isBlocked ? "Blocked" : "Active"}`, isBlocked: passenger.isBlocked });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to update status", error: error.message });
+    }
+};
+
+// Delete passenger
+export const deletePassenger = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Passenger.findByIdAndDelete(id);
+        res.status(200).json({ message: "Passenger deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to delete passenger", error: error.message });
+    }
+};

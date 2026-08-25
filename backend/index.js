@@ -6,6 +6,7 @@ import operatorRouter from "./routers/operatorRouter.js";
 import adminRouter from "./routers/adminRouter.js";
 import busRouter from "./routers/busRouter.js";
 import bookingRouter from "./routers/bookingRouter.js"; 
+import reviewRouter from "./routers/reviewRouter.js";
 import jwt from "jsonwebtoken";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -50,11 +51,12 @@ mongoose.connect(connectionString).then(
     console.log("Error connecting to MongoDB");
 })
 
-app.use("/passengers", passengerRouter); // Route for passenger-related endpoints
+app.use("/api/passengers", passengerRouter); // Route for passenger-related endpoints
 app.use("/operators", operatorRouter); // Route for operator-related endpoints
 app.use("/admins", adminRouter); // Route for admin-related endpoints
 app.use("/operators/buses", busRouter); // Route for operator bus
 app.use("/api/bookings", bookingRouter); // Route for bookings
+app.use("/api/reviews", reviewRouter); //reviews
 
 //listen to port 5000
 app.listen(5000, () => {

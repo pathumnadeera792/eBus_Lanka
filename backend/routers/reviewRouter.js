@@ -1,15 +1,15 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { 
-    createPassenger, 
-    loginPassenger, 
-    updatePassengerProfile, 
-    getPassengerProfile 
-} from "../controllers/passengerController.js";
+    getAllReviews, 
+    getAllReviewsForAdmin, 
+    createReview, 
+    updateReviewStatus, 
+    deleteReview 
+} from "../controllers/reviewController.js";
 
-const passengerRouter = express.Router();
+const reviewRouter = express.Router();
 
-// --- Verify Token Middleware ---
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
@@ -24,9 +24,10 @@ const verifyToken = (req, res, next) => {
     }
 };
 
-passengerRouter.post("/register", createPassenger);
-passengerRouter.post("/login", loginPassenger);
-passengerRouter.get("/profile", verifyToken, getPassengerProfile);
-passengerRouter.put("/profile", verifyToken, updatePassengerProfile);
+reviewRouter.get("/all", getAllReviews);
+reviewRouter.get("/admin/all", verifyToken, getAllReviewsForAdmin);
+reviewRouter.post("/add", verifyToken, createReview);
+reviewRouter.put("/admin/status/:id", verifyToken, updateReviewStatus);
+reviewRouter.delete("/admin/:id", verifyToken, deleteReview);
 
-export default passengerRouter;
+export default reviewRouter;

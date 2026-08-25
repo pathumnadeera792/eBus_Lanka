@@ -22,7 +22,7 @@ export default function LoginPage() {
       // Using the secure Backend URL from the .env file
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
       
-      const response = await axios.post(`${backendUrl}/passengers/login`, {
+      const response = await axios.post(`${backendUrl}/api/passengers/login`, {
         email: email,
         password: password,
       });

@@ -1,6 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { getBookedSeats, createBooking, getMyBookings } from "../controllers/bookingController.js";
+import { getBookedSeats, createBooking, getMyBookings, getOperatorManifest, deleteBooking, getOperatorDashboardStats } from "../controllers/bookingController.js";
+
 
 const bookingRouter = express.Router();
 
@@ -21,5 +22,10 @@ const verifyToken = (req, res, next) => {
 bookingRouter.get("/booked-seats", getBookedSeats);
 bookingRouter.post("/book", verifyToken, createBooking);
 bookingRouter.get("/my-bookings", verifyToken, getMyBookings);
+bookingRouter.get("/operator/manifest", verifyToken, getOperatorManifest);
+// Operator booking delete route
+bookingRouter.delete("/operator/delete/:id", verifyToken, deleteBooking);
+// Operator Dashboard Stats Route
+bookingRouter.get("/operator/dashboard-stats", verifyToken, getOperatorDashboardStats);
 
 export default bookingRouter;

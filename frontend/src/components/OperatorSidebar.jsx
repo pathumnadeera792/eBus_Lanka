@@ -38,7 +38,7 @@ export default function OperatorSidebar() {
   const navLinks = [
     { name: 'Dashboard', path: '/operator/dashboard', icon: <FaThLarge /> },
     { name: 'My Buses', path: '/operator/buses', icon: <FaBus /> },
-    { name: 'Manifest', path: '/operator/manifest', icon: <FaClipboardList /> },
+    { name: 'Manifest', path: '/operator/OperatorManifest', icon: <FaClipboardList /> },
     { name: 'Reports', path: '/operator/reports', icon: <FaFileAlt /> },
     { name: 'Setting', path: '/operator/settings', icon: <FaCog /> },
   ];

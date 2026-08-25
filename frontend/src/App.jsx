@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast"; // Import toaster for popup messages
 import "./App.css";
 
-// Import pages
+// Import passneger pages
 import HomePage from "./pages/homePage";
 import LoginPage from "./pages/loginPage";
 import ChooseLoginPage from "./pages/chooseLoginPage";
@@ -13,18 +13,21 @@ import FindBusPage from "./pages/findBusPage";
 import Reservation from "./pages/Reservation";
 import ChooseSignUpPage from "./pages/ChooseSignUpPage";
 import PassengerReservations from "./pages/PassengerReservations";
+import PassengerReviews from "./pages/PassengerReviews";
 
 //operator
 import OperatorDashboard from "./pages/operator/OperatorDashboard";
 import OperatorRegisterPage from "./pages/operator/RegisterPage";
 import OperatorLoginPage from "./pages/operator/LoginPage";
 import MyBuses from "./pages/operator/MyBuses";
+import OperatorManifest from "./pages/operator/OperatorManifest";
 
 //admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import OperatorRequests from "./pages/admin/OperatorRequests";
 import BusRequests from "./pages/admin/BusRequests";
 import ManageBuses from "./pages/admin/ManageBuses";
+import AdminReviews from "./pages/admin/AdminReviews";
 
 
 
@@ -47,18 +50,21 @@ function App() {
           <Route path="/reservation" element={<Reservation />} />
           <Route path="/choose-signup" element={<ChooseSignUpPage />} />
           <Route path="/passenger-reservations" element={<PassengerReservations />} />
+          <Route path="/passenger-reviews" element={<PassengerReviews />} />
 
           {/* Operator Routes */}
           <Route path="/operator/dashboard" element={<OperatorDashboard />} />
           <Route path="/operator/register" element={<OperatorRegisterPage />} />
           <Route path="/operator/login" element={<OperatorLoginPage />} />
           <Route path="/operator/buses" element={<MyBuses />} />
+          <Route path="/operator/OperatorManifest" element={<OperatorManifest />} />
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/operator-requests" element={<OperatorRequests />} />
           <Route path="/admin/busRequests" element={<BusRequests />} />
           <Route path="/admin/manage-buses" element={<ManageBuses />} />
+          <Route path="/admin/reviews" element={<AdminReviews />} />
 
 
         </Routes> 

@@ -51,7 +51,7 @@ export default function RegisterPage() {
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
       
       // Sending data to backend (excluding confirmPassword, securityQuestion, and answer as they are not in the backend schema currently)
-      const response = await axios.post(`${backendUrl}/passengers/register`, {
+      const response = await axios.post(`${backendUrl}/api/passengers/register`, {
         fullName: formData.fullName,
         userName: formData.userName,
         email: formData.email,

@@ -7,6 +7,7 @@ import adminRouter from "./routers/adminRouter.js";
 import busRouter from "./routers/busRouter.js";
 import bookingRouter from "./routers/bookingRouter.js"; 
 import reviewRouter from "./routers/reviewRouter.js";
+import chatRouter from "./routers/chatRouter.js";
 import jwt from "jsonwebtoken";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -57,6 +58,7 @@ app.use("/admins", adminRouter); // Route for admin-related endpoints
 app.use("/operators/buses", busRouter); // Route for operator bus
 app.use("/api/bookings", bookingRouter); // Route for bookings
 app.use("/api/reviews", reviewRouter); //reviews
+app.use("/api/chat", chatRouter); //Ai chat
 
 //listen to port 5000
 app.listen(5000, () => {

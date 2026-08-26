@@ -8,6 +8,7 @@ import { FaSyncAlt } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import BusCard from "../components/BusCard";
+import PassengerChatWidget from "../components/PassengerChatWidget"; // AI Chatbot Component එක මෙතනින් import කර ඇත
 
 export default function FindBusPage() {
   const navigate = useNavigate();
@@ -72,7 +73,7 @@ export default function FindBusPage() {
 
     // 1. Get exact day name from the selected date (e.g., "Sunday", "Monday")
     const selectedDateObj = new Date(searchData.date);
-    const dayName = selectedDateObj.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase(); // e.g., "sunday"
+    const dayName = selectedDateObj.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
 
     const results = buses.filter(bus => {
       // Check From (Departure Location)
@@ -83,14 +84,14 @@ export default function FindBusPage() {
       const matchRoute = bus.routeNo.toLowerCase().includes(searchData.to.toLowerCase()) || bus.busName.toLowerCase().includes(searchData.to.toLowerCase());
       const matchTo = matchDestination || matchRoute;
 
-      // Check Schedule / Dates (Array of strings like ["Daily", "Sunday", "2026-08-31"])
+      // Check Schedule / Dates
       let matchDate = false;
       if (Array.isArray(bus.departureDates)) {
         matchDate = bus.departureDates.some(schedule => {
           const schedLower = schedule.toLowerCase();
           const isDaily = schedLower.includes("daily");
-          const isDayMatch = schedLower.includes(dayName); // Matches "sunday", "monday", etc.
-          const isExactDateMatch = schedLower.includes(searchData.date); // Matches exact "2026-08-31"
+          const isDayMatch = schedLower.includes(dayName);
+          const isExactDateMatch = schedLower.includes(searchData.date);
 
           return isDaily || isDayMatch || isExactDateMatch;
         });
@@ -117,8 +118,13 @@ export default function FindBusPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-green-100">
+    <div className="flex flex-col min-h-screen bg-green-100 relative">
       <Navbar />
+
+      {/* AI Chatbot Widget placed right below Navbar on the top-right side */}
+      <div className="absolute top-20 right-6 z-50">
+        <PassengerChatWidget />
+      </div>
 
       {/* Hero Section */}
       <div 
@@ -154,7 +160,7 @@ export default function FindBusPage() {
                 value={searchData.from} 
                 onChange={handleChange} 
                 placeholder="e.g. Colombo"
-                className="w-full p-3 border border-gray-300 rounded-lg outline-none focus:border-green-600 focus:ring-2 focus:ring-green-200 transition-all bg-white"
+                className="w-full p-3 border border-gray-300 rounded-lg outline-none focus:border-green-600 focus:ring-2 focus:ring-green-200 transition-all bg-white text-gray-900"
               />
             </div>
 
@@ -166,7 +172,7 @@ export default function FindBusPage() {
                 value={searchData.to} 
                 onChange={handleChange} 
                 placeholder="e.g. Kandy"
-                className="w-full p-3 border border-gray-300 rounded-lg outline-none focus:border-green-600 focus:ring-2 focus:ring-green-200 transition-all bg-white"
+                className="w-full p-3 border border-gray-300 rounded-lg outline-none focus:border-green-600 focus:ring-2 focus:ring-green-200 transition-all bg-white text-gray-900"
               />
             </div>
 
@@ -177,7 +183,7 @@ export default function FindBusPage() {
                 name="date" 
                 value={searchData.date} 
                 onChange={handleChange} 
-                className="w-full p-3 border border-gray-300 rounded-lg outline-none focus:border-green-600 focus:ring-2 focus:ring-green-200 transition-all bg-white"
+                className="w-full p-3 border border-gray-300 rounded-lg outline-none focus:border-green-600 focus:ring-2 focus:ring-green-200 transition-all bg-white text-gray-900"
               />
             </div>
 

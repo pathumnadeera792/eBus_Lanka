@@ -1,8 +1,10 @@
 import Groq from "groq-sdk";
 import Bus from "../models/bus.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Groq client initialized directly with your API key
-const groq = new Groq({ apiKey: "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" });
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export const handlePassengerChat = async (req, res) => {
     try {

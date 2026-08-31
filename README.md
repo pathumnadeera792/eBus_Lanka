@@ -32,3 +32,9 @@ A comprehensive, full-stack web application designed to centralize and streamlin
 * **Database Layer (Storage):** Scalable MongoDB collections tracking users, operators, buses, routes, seats, bookings, and payments[cite: 3].
 
 ---
+📌 Author
+R P Nadeera
+
+BSc (Hons) Software Engineering
+
+KIU Campus, Sri Lanka

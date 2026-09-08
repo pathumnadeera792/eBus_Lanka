@@ -161,3 +161,44 @@ export const deletePassenger = async (req, res) => {
         res.status(500).json({ message: "Failed to delete passenger", error: error.message });
     }
 };
+
+
+// Get Security Question by Email for Password Reset
+export const getSecurityQuestion = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const passenger = await Passenger.findOne({ email });
+        if (!passenger) {
+            return res.status(404).json({ message: "Passenger not found with this email" });
+        }
+        res.status(200).json({ securityQuestion: passenger.securityQuestion });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching security question", error: error.message });
+    }
+};
+
+// Reset Password using Security Answer
+export const resetPasswordWithSecurity = async (req, res) => {
+    try {
+        const { email, answer, newPassword } = req.body;
+        const passenger = await Passenger.findOne({ email });
+        
+        if (!passenger) {
+            return res.status(404).json({ message: "Passenger not found" });
+        }
+
+        // check the securtiy answer
+        if (passenger.answer !== answer) {
+            return res.status(400).json({ message: "Incorrect security answer" });
+        }
+
+        // new pasword hash save 
+        const passwordHash = bcrypt.hashSync(newPassword, 10);
+        passenger.password = passwordHash;
+        await passenger.save();
+
+        res.status(200).json({ message: "Password reset successful! You can now log in." });
+    } catch (error) {
+        res.status(500).json({ message: "Error resetting password", error: error.message });
+    }
+};

@@ -3,13 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import ProfileModal from "./ProfileModal";
 import axios from "axios";
+import { useTranslation } from "react-i18next"; // i18n සඳහා එකතු කරන ලදී
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [initials, setInitials] = useState(""); // මුල් අකුරු දෙක සඳහා State එක
+  const [initials, setInitials] = useState("");
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  
+  const { t, i18n } = useTranslation(); // භාෂා පරිවර්තන හූක් එක
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -21,7 +24,6 @@ export default function Navbar() {
     }
   }, []);
 
-  // මගියාගේ Full Name එක ගෙනැවිත් එහි වචන දෙකක මුල් අකුරු දෙක ලබා ගැනීම
   const fetchUserInitials = async (token) => {
     try {
       const response = await axios.get(`${backendUrl}/api/passengers/profile`, {
@@ -29,7 +31,6 @@ export default function Navbar() {
       });
       if (response.data && response.data.fullName) {
         const words = response.data.fullName.trim().split(" ");
-        // වචන දෙකක් හෝ වැඩි ගණනක් ඇත්නම් පළමු වචන දෙකේ මුල් අකුරු ලබා ගැනීම (උදා: P සහ N -> PN)
         if (words.length >= 2) {
           const init = (words[0][0] + words[1][0]).toUpperCase();
           setInitials(init);
@@ -51,6 +52,11 @@ export default function Navbar() {
     navigate("/");
   };
 
+  // භාෂාව මාරු කිරීම සඳහා
+  const changeLanguage = (e) => {
+    i18n.changeLanguage(e.target.value);
+  };
+
   return (
     <nav className="sticky top-0 z-50 flex items-center justify-between px-8 py-3 bg-green-100 backdrop-blur-md shadow-sm border-b border-gray-100">
       
@@ -70,37 +76,47 @@ export default function Navbar() {
 
       {/* Center Navigation Links */}
       <div className="hidden md:flex gap-8 font-medium text-gray-600 items-center">
-        <Link to="/" className="hover:text-green-600 transition duration-300">Home</Link>
-        <Link to="/about" className="hover:text-green-600 transition duration-300">About</Link>
-        <Link to="/contact" className="hover:text-green-600 transition duration-300">Contact</Link>
+        <Link to="/" className="hover:text-green-600 transition duration-300">{t("nav_home")}</Link>
+        <Link to="/about" className="hover:text-green-600 transition duration-300">{t("nav_about")}</Link>
+        <Link to="/contact" className="hover:text-green-600 transition duration-300">{t("nav_contact")}</Link>
 
         {isLoggedIn && (
           <>
             <Link to="/find-bus" className="hover:text-green-600 transition duration-300 font-semibold text-gray-600">
-              Buses
+              {t("nav_buses")}
             </Link>
             <Link to="/passenger-reservations" className="hover:text-green-600 transition duration-300 font-semibold text-gray-600">
-              Bookings
+              {t("nav_bookings")}
             </Link>
             <Link to="/passenger-reviews" className="hover:text-green-600 transition duration-300 font-semibold text-gray-600">
-              Reviews
+              {t("nav_reviews")}
             </Link>
           </>
         )}
       </div>
 
-      {/* Right Side - Dynamic Buttons */}
-      <div>
+      {/* Right Side - Language Selector & Dynamic Buttons */}
+      <div className="flex items-center gap-4">
+        {/* Language Dropdown */}
+        <select 
+          onChange={changeLanguage} 
+          defaultValue={i18n.language} 
+          className="bg-white text-gray-700 font-semibold text-sm px-3 py-2 rounded-full border border-green-300 shadow-sm focus:outline-none cursor-pointer hover:border-green-500 transition"
+        >
+          <option value="en">English</option>
+          <option value="si">සිංහල</option>
+          <option value="ta">தமிழ்</option>
+        </select>
+
         {isLoggedIn ? (
           <div className="flex items-center gap-4">
             <button 
               onClick={handleLogout}
               className="px-6 py-2 text-white bg-green-600 rounded-full font-semibold shadow-md hover:bg-green-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
             >
-              Log Out
+              {t("nav_logout")}
             </button>
             
-            {/* Profile Icon with Initials inside or beside */}
             <button 
               onClick={() => setIsProfileModalOpen(true)}
               title="My Profile" 
@@ -119,7 +135,7 @@ export default function Navbar() {
         ) : (
           <Link to="/choose-signup">
             <button className="px-6 py-2 text-white bg-green-600 rounded-full font-semibold shadow-md hover:bg-green-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
-              Sign Up
+              {t("nav_signup")}
             </button>
           </Link>
         )}

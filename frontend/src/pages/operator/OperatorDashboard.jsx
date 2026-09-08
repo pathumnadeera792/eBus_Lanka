@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
-// Import Components
-import OperatorSidebar from "../../components/OperatorSidebar";
+// Import Operator Sidebar
+import OperatorSidebar from "../../components/OperatorSidebar"; 
 
 export default function OperatorDashboard() {
   const navigate = useNavigate();
@@ -51,6 +53,70 @@ export default function OperatorDashboard() {
 
     fetchDashboardData();
   }, [navigate, backendUrl]);
+
+  // Function to Download PDF Report
+  const downloadPDFReport = () => {
+    try {
+      const doc = new jsPDF();
+
+      // Report Header
+      doc.setFontSize(20);
+      doc.setTextColor(22, 101, 52); // Green color
+      doc.text("eBus Lanka - Operator Report", 14, 20);
+
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 28);
+
+      // Summary Statistics Section
+      doc.setFontSize(14);
+      doc.setTextColor(30, 30, 30);
+      doc.text("Summary Overview", 14, 40);
+
+      const summaryData = [
+        ["Total Buses", stats.totalBuses],
+        ["Total Sales (LKR)", stats.totalSales.toLocaleString()],
+        ["Total Seats Booked", stats.totalSeatsBooked]
+      ];
+
+      autoTable(doc, {
+        startY: 45,
+        head: [["Metric", "Value"]],
+        body: summaryData,
+        theme: "grid",
+        headStyles: { fillColor: [22, 101, 52] }
+      });
+
+      // Recent Bookings Table Section
+      const finalY = doc.lastAutoTable.finalY || 60;
+      doc.setFontSize(14);
+      doc.setTextColor(30, 30, 30);
+      doc.text("Recent Bookings Overview", 14, finalY + 15);
+
+      const bookingRows = recentBookings.map((b) => [
+        b.busNumber,
+        `${b.dateTime} | ${b.phone}`,
+        b.passengerName,
+        b.seats,
+        "Paid"
+      ]);
+
+      autoTable(doc, {
+        startY: finalY + 20,
+        head: [["Bus Number", "Date - Time - Phone", "Passenger Name", "Seats", "Status"]],
+        body: bookingRows,
+        theme: "grid",
+        headStyles: { fillColor: [31, 41, 55] }
+      });
+
+      // Save PDF
+      doc.save("eBus_Lanka_Operator_Report.pdf");
+      toast.success("PDF Report downloaded successfully!");
+    } catch (error) {
+      console.error("PDF Generation Error:", error);
+      toast.error(`Error: ${error.message}`);
+    }
+  };
 
   // Overview Stats Array mapped from real database stats
   const overviewStats = [
@@ -99,6 +165,13 @@ export default function OperatorDashboard() {
               <h1 className="text-2xl font-extrabold text-gray-800">Dashboard Overview</h1>
               <p className="text-gray-500 text-sm mt-1">Monitor your fleet statistics, sales, and recent bookings.</p>
             </div>
+            {/* Download PDF Report Button */}
+            <button
+              onClick={downloadPDFReport}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md transition flex items-center gap-2"
+            >
+              📥 Download Report (PDF)
+            </button>
           </div>
 
           {/* Overview Cards */}

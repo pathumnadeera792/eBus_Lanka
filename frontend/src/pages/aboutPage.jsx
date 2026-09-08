@@ -2,8 +2,11 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { FaBullseye, FaLightbulb, FaShieldAlt, FaUsers } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 export default function AboutPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
@@ -11,16 +14,15 @@ export default function AboutPage() {
       {/* Hero Section for About Page */}
       <div 
         className="relative w-full h-[40vh] bg-cover bg-center flex items-center justify-center"
-        style={{ backgroundImage: "url('/bg-image.jpg')" }} // Using your main background image
+        style={{ backgroundImage: "url('/bg-image.jpg')" }}
       >
         <div className="absolute inset-0 bg-black/60"></div>
         <div className="relative z-10 text-center px-4">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-            About <span className="text-green-500">e</span>Bus Lanka
+            {t("about_hero_title")} <span className="text-green-500">e</span>Bus Lanka
           </h1>
           <p className="text-gray-200 text-lg md:text-xl font-medium max-w-2xl mx-auto">
-            Sri Lanka's Pioneer and Number One Online Bus Ticket Booking Platform, 
-            revolutionizing the way you travel.
+            {t("about_hero_desc")}
           </p>
         </div>
       </div>
@@ -32,15 +34,13 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <h2 className="text-3xl font-bold text-gray-800 border-l-4 border-green-500 pl-4">
-              Who We Are
+              {t("who_we_are_title")}
             </h2>
             <p className="text-gray-600 leading-relaxed text-lg">
-              eBus Lanka is a comprehensive, full-fledged online bus booking platform designed to simplify your travel experience in Sri Lanka. 
-              We bridge the gap between passengers and bus operators by providing a seamless digital environment to buy and sell bus seats.
+              {t("who_we_are_p1")}
             </p>
             <p className="text-gray-600 leading-relaxed text-lg">
-              Gone are the days of waiting in long queues. With our efficient reservation system, passengers can plan their journeys early, 
-              secure their preferred seats, and receive instant booking confirmations—all from the comfort of their homes.
+              {t("who_we_are_p2")}
             </p>
           </div>
           <div>
@@ -59,11 +59,9 @@ export default function AboutPage() {
             <div className="bg-green-100 p-4 rounded-full mb-6">
               <FaBullseye className="text-4xl text-green-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Our Mission</h3>
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">{t("mission_title")}</h3>
             <p className="text-gray-600 leading-relaxed">
-              To provide the public with a safe, dependable, and comfortable road passenger transport system. 
-              We aim to ensure optimal utilization of resources through a dedicated staff, offering reasonable fares and 
-              exceptional service to make every journey a pleasant experience.
+              {t("mission_desc")}
             </p>
           </div>
 
@@ -72,11 +70,9 @@ export default function AboutPage() {
             <div className="bg-green-100 p-4 rounded-full mb-6">
               <FaLightbulb className="text-4xl text-green-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Our Vision</h3>
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">{t("vision_title")}</h3>
             <p className="text-gray-600 leading-relaxed">
-              To be the most trusted and technologically advanced travel partner in Sri Lanka, 
-              connecting every corner of the island while promoting sustainable and efficient public transportation 
-              for future generations.
+              {t("vision_desc")}
             </p>
           </div>
         </div>
@@ -84,23 +80,23 @@ export default function AboutPage() {
         {/* 3. Core Values Section */}
         <div>
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
-            Why Choose eBus Lanka?
+            {t("why_choose_title")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white p-8 rounded-xl shadow-md text-center border-t-4 border-green-500">
               <FaUsers className="text-5xl text-gray-700 mx-auto mb-4" />
-              <h4 className="text-xl font-bold text-gray-800 mb-2">Customer Centric</h4>
-              <p className="text-gray-600">We prioritize your comfort and time, giving you maximum choices across all routes.</p>
+              <h4 className="text-xl font-bold text-gray-800 mb-2">{t("value_customer_title")}</h4>
+              <p className="text-gray-600">{t("value_customer_desc")}</p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-md text-center border-t-4 border-green-500">
               <FaShieldAlt className="text-5xl text-gray-700 mx-auto mb-4" />
-              <h4 className="text-xl font-bold text-gray-800 mb-2">Secure & Reliable</h4>
-              <p className="text-gray-600">Instant confirmations and secure digital platforms for a worry-free booking process.</p>
+              <h4 className="text-xl font-bold text-gray-800 mb-2">{t("value_secure_title")}</h4>
+              <p className="text-gray-600">{t("value_secure_desc")}</p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-md text-center border-t-4 border-green-500">
               <FaLightbulb className="text-5xl text-gray-700 mx-auto mb-4" />
-              <h4 className="text-xl font-bold text-gray-800 mb-2">Innovation</h4>
-              <p className="text-gray-600">Continuously improving our MERN stack-based technology to provide the best user experience.</p>
+              <h4 className="text-xl font-bold text-gray-800 mb-2">{t("value_innovation_title")}</h4>
+              <p className="text-gray-600">{t("value_innovation_desc")}</p>
             </div>
           </div>
         </div>

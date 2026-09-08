@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast"; // Import toaster for popup messages
 import "./App.css";
+import './i18n';
 
 // Import passneger pages
 import HomePage from "./pages/homePage";
@@ -31,6 +32,7 @@ import ManageBuses from "./pages/admin/ManageBuses";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminPassengers from "./pages/admin/AdminPassengers";
 import AdminOperators from "./pages/admin/AdminOperators";
+import AdminManifest from "./pages/admin/AdminManifest";
 
 
 function App() {
@@ -70,7 +72,7 @@ function App() {
           <Route path="/admin/reviews" element={<AdminReviews />} />
           <Route path="/admin/operators" element={<AdminOperators />} />
           <Route path="/admin/passengers" element={<AdminPassengers />} />
-
+          <Route path="/admin/manifest" element={<AdminManifest />} />
 
         </Routes> 
       </div>

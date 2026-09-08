@@ -7,7 +7,9 @@ import {
     getPassengerProfile,
     getAllPassengers,
     togglePassengerStatus,
-    deletePassenger
+    deletePassenger,
+    getSecurityQuestion,
+    resetPasswordWithSecurity
 
 
 } from "../controllers/passengerController.js";
@@ -36,5 +38,7 @@ passengerRouter.put("/profile", verifyToken, updatePassengerProfile);
 passengerRouter.get("/admin/all", verifyToken, getAllPassengers);
 passengerRouter.put("/admin/toggle-block/:id", verifyToken, togglePassengerStatus);
 passengerRouter.delete("/admin/delete/:id", verifyToken, deletePassenger);
+passengerRouter.post('/forgot-password', getSecurityQuestion);
+passengerRouter.post('/reset-password', resetPasswordWithSecurity);
 
 export default passengerRouter;

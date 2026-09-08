@@ -202,3 +202,42 @@ export const getOperatorDashboardStats = async (req, res) => {
         res.status(500).json({ message: "Failed to fetch dashboard stats", error: error.message });
     }
 };
+
+// Get All Manifests for Super Admin (Manual fetch to prevent MissingSchemaError)
+export const getAllManifestsForAdmin = async (req, res) => {
+    try {
+        // 1. Fetch all bookings on the platform, sorted by newest first
+        const bookings = await Booking.find().sort({ createdAt: -1 });
+
+        // 2. Manually fetch Passenger, Bus, and Operator details without using .populate()
+        const populatedBookings = await Promise.all(
+            bookings.map(async (booking) => {
+                const passengerDetails = await Passenger.findById(booking.passengerId).select("fullName email phone");
+                const busDetails = await Bus.findById(booking.busId).select("busName brNumber type routeNo amount departureTime operatorId");
+                
+                // Fetch Operator details using the operatorId found in bus details
+                let operatorDetails = { fullName: "N/A", companyName: "N/A" };
+                if (busDetails && busDetails.operatorId) {
+                    const foundOperator = await Passenger.findById(busDetails.operatorId).select("fullName companyName"); // නැතහොත් අදාළ Operator model එක භාවිතා කරන්න
+                    if (foundOperator) {
+                        operatorDetails = foundOperator;
+                    }
+                }
+
+                return {
+                    ...booking._doc,
+                    passengerId: passengerDetails || { fullName: "Unknown Passenger", phone: "N/A" },
+                    busId: busDetails ? { 
+                        ...busDetails._doc, 
+                        operatorId: operatorDetails 
+                    } : { busName: "Bus N/A", brNumber: "N/A", operatorId: operatorDetails }
+                };
+            })
+        );
+
+        res.status(200).json(populatedBookings);
+    } catch (error) {
+        console.error("Backend Manifest Error:", error.message); 
+        res.status(500).json({ message: "Failed to fetch all manifests", error: error.message });
+    }
+};

@@ -6,6 +6,7 @@ import BusCard from "../components/BusCard";
 import emailjs from "@emailjs/browser";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 // Import Icons
 import { FaSuitcaseRolling, FaPhoneAlt, FaDollarSign, FaMapMarkerAlt, FaEnvelope } from "react-icons/fa";
@@ -14,12 +15,12 @@ export default function HomePage() {
   const form = useRef();
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = useState(false);
   const [approvedBuses, setApprovedBuses] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Check login status and fetch approved buses on page load
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -30,7 +31,6 @@ export default function HomePage() {
       try {
         const response = await axios.get(`${backendUrl}/operators/buses/approved`);
         if (Array.isArray(response.data)) {
-          // Show up to 3 approved buses on the home page
           setApprovedBuses(response.data.slice(0, 3)); 
         }
       } catch (error) {
@@ -41,20 +41,18 @@ export default function HomePage() {
     fetchApprovedBuses();
   }, [backendUrl]);
 
-  // Handle View All Buses click with auth check
   const handleViewAllBuses = () => {
     const token = localStorage.getItem("token");
     const userRole = localStorage.getItem("userRole");
 
     if (!token || userRole !== "passenger") {
-      toast.error("Please login as a passenger to view all buses");
+      toast.error(t("toast_login_required"));
       navigate("/login");
       return;
     }
     navigate("/find-bus");
   };
 
-  // Function to send email from Home Page
   const sendEmail = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -65,11 +63,11 @@ export default function HomePage() {
 
     try {
       await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form.current, PUBLIC_KEY);
-      toast.success("Message sent successfully!");
+      toast.success(t("toast_msg_success"));
       form.current.reset();
     } catch (error) {
       console.error("EmailJS Error:", error);
-      toast.error("Failed to send the message. Please try again.");
+      toast.error(t("toast_msg_error"));
     } finally {
       setIsLoading(false);
     }
@@ -87,23 +85,22 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-black/60"></div>
         <div className="relative z-10 text-center px-4">
           <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-6 drop-shadow-2xl">
-            Book Your Ticket <br /> <span className="text-green-400">Enjoy Your Journey</span>
+            {t("hero_title_1")} <br /> <span className="text-green-400">{t("hero_title_2")}</span>
           </h1>
           <p className="text-gray-200 text-lg md:text-xl mb-10 max-w-2xl mx-auto font-medium drop-shadow-md">
-            Sri Lanka's Pioneer and Number One Online Bus Ticket Booking Platform.
+            {t("hero_desc")}
           </p>
           
-          {/* Dynamic Hero Button: If logged in show "Explore Buses", else show "Login to Continue" */}
           {isLoggedIn ? (
             <Link to="/find-bus">
               <button className="px-10 py-4 bg-green-600 text-white rounded-full font-bold text-lg hover:bg-green-700 hover:shadow-[0_10px_20px_rgba(22,163,74,0.4)] hover:-translate-y-1 transition-all duration-300">
-                Explore Buses Now
+                {t("hero_btn_explore")}
               </button>
             </Link>
           ) : (
             <Link to="/choose-login">
               <button className="px-10 py-4 bg-green-600 text-white rounded-full font-bold text-lg hover:bg-green-700 hover:shadow-[0_10px_20px_rgba(22,163,74,0.4)] hover:-translate-y-1 transition-all duration-300">
-                Login to Continue
+                {t("hero_btn_login")}
               </button>
             </Link>
           )}
@@ -116,16 +113,16 @@ export default function HomePage() {
         <div className="flex flex-col md:flex-row gap-12 items-center bg-green-100 p-8 md:p-12 rounded-3xl shadow-xl border border-green-400">
           <div className="md:w-1/2 space-y-6">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-              eBus Lanka Made Easy <br /> <span className="text-green-800">and Efficient</span>
+              {t("about_heading_1")} <br /> <span className="text-green-800">{t("about_heading_2")}</span>
             </h2>
             <h3 className="text-gray-800 font-semibold text-lg border-l-4 border-green-700 pl-4">
-              Plan journey, Reserve bus seats, Reach destination.
+              {t("about_subheading")}
             </h3>
             <p className="text-gray-800 font-medium leading-relaxed">
-              We provide a full-fledged online bus booking platform to buy and sell bus seats. Passengers can purchase bus tickets online and receive instant confirmation via text message.
+              {t("about_p1")}
             </p>
             <p className="text-gray-800 font-medium leading-relaxed">
-              With our efficient reservation system, plan your journey early, save your valuable time, avoid waiting in long queues, and enjoy your happy journey with comfort.
+              {t("about_p2")}
             </p>
           </div>
           <div className="md:w-1/2 relative group">
@@ -141,10 +138,10 @@ export default function HomePage() {
         {/* 3. Stats Section */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { count: "1500+", label: "Passengers" },
-            { count: "350+", label: "Buses" },
-            { count: "50+", label: "Staff" },
-            { count: "100+", label: "Routes" }
+            { count: "1500+", label: t("stat_passengers") },
+            { count: "350+", label: t("stat_buses") },
+            { count: "50+", label: t("stat_staff") },
+            { count: "100+", label: t("stat_routes") }
           ].map((stat, index) => (
             <div key={index} className="bg-green-100 text-center py-10 rounded-2xl shadow-lg border-b-4 border-green-700 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
               <h3 className="text-4xl font-extrabold text-gray-900 mb-2 drop-shadow-sm">{stat.count}</h3>
@@ -156,40 +153,40 @@ export default function HomePage() {
         {/* 4. Why Book With Us Section */}
         <div className="bg-gray-100 rounded-3xl overflow-hidden shadow-xl flex flex-col md:flex-row border border-gray-200">
           <div className="md:w-1/3 p-10 flex flex-col justify-center bg-gray-900 text-white">
-            <h2 className="text-3xl font-bold mb-6 text-green-400">Why Book with eBus Lanka?</h2>
+            <h2 className="text-3xl font-bold mb-6 text-green-400">{t("why_title")}</h2>
             <p className="leading-relaxed opacity-90 text-lg">
-              To provide the public a safe, dependable and comfortable road passenger transport through a dedicated staff.
+              {t("why_desc")}
             </p>
           </div>
           <div className="md:w-2/3 grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-gray-100">
             <div className="bg-green-100 p-8 rounded-2xl text-center flex flex-col items-center justify-center hover:bg-green-400 transition-colors shadow-md">
               <FaSuitcaseRolling className="text-5xl text-green-900 mb-4" />
-              <h3 className="font-bold text-gray-900 mb-2 text-lg">More Choices</h3>
-              <p className="text-gray-800 font-medium text-sm">Maximum choices across all routes.</p>
+              <h3 className="font-bold text-gray-900 mb-2 text-lg">{t("why_choice_title")}</h3>
+              <p className="text-gray-800 font-medium text-sm">{t("why_choice_desc")}</p>
             </div>
             <div className="bg-green-100 p-8 rounded-2xl text-center flex flex-col items-center justify-center hover:bg-green-400 transition-colors shadow-md">
               <FaPhoneAlt className="text-5xl text-green-900 mb-4" />
-              <h3 className="font-bold text-gray-900 mb-2 text-lg">24/7 Support</h3>
-              <p className="text-gray-800 font-medium text-sm">We help make your journey better.</p>
+              <h3 className="font-bold text-gray-900 mb-2 text-lg">{t("why_support_title")}</h3>
+              <p className="text-gray-800 font-medium text-sm">{t("why_support_desc")}</p>
             </div>
             <div className="bg-green-100 p-8 rounded-2xl text-center flex flex-col items-center justify-center hover:bg-green-400 transition-colors shadow-md">
               <FaDollarSign className="text-5xl text-green-900 mb-4" />
-              <h3 className="font-bold text-gray-900 mb-2 text-lg">Best Price</h3>
-              <p className="text-gray-800 font-medium text-sm">Always offer the best ticket prices.</p>
+              <h3 className="font-bold text-gray-900 mb-2 text-lg">{t("why_price_title")}</h3>
+              <p className="text-gray-800 font-medium text-sm">{t("why_price_desc")}</p>
             </div>
           </div>
         </div>
 
-        {/* 5. Available Buses Section (Dynamic Approved Buses) */}
+        {/* 5. Available Buses Section */}
         <div className="bg-green-100 p-10 rounded-3xl shadow-xl border border-green-400">
           <div className="text-center mb-12">
-            <h4 className="text-green-900 font-extrabold uppercase tracking-wider text-sm mb-2">Our Fleet</h4>
-            <h2 className="text-4xl font-bold text-gray-900">Available Busses</h2>
+            <h4 className="text-green-900 font-extrabold uppercase tracking-wider text-sm mb-2">{t("fleet_subtitle")}</h4>
+            <h2 className="text-4xl font-bold text-gray-900">{t("fleet_title")}</h2>
             <div className="w-24 h-1 bg-green-700 mx-auto mt-4 rounded-full"></div>
           </div>
           
           {approvedBuses.length === 0 ? (
-            <div className="text-center py-8 text-gray-700 font-medium">No approved buses available right now.</div>
+            <div className="text-center py-8 text-gray-700 font-medium">{t("no_buses_msg")}</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {approvedBuses.map((bus) => (
@@ -203,7 +200,7 @@ export default function HomePage() {
               onClick={handleViewAllBuses}
               className="bg-gray-900 text-white px-10 py-3 rounded-full font-bold hover:bg-black transition-colors shadow-lg hover:shadow-xl hover:-translate-y-0.5"
             >
-              View All Busses
+              {t("btn_view_all_buses")}
             </button>
           </div>
         </div>
@@ -213,8 +210,8 @@ export default function HomePage() {
           
           {/* Contact Info (Left Side) */}
           <div className="md:w-5/12 bg-gray-900 text-white p-10 flex flex-col justify-center">
-            <h4 className="text-green-500 font-bold uppercase tracking-wider text-sm mb-2">Contact</h4>
-            <h2 className="text-4xl font-bold mb-10">Get In Touch</h2>
+            <h4 className="text-green-500 font-bold uppercase tracking-wider text-sm mb-2">{t("contact_tag")}</h4>
+            <h2 className="text-4xl font-bold mb-10">{t("contact_title")}</h2>
             
             <div className="space-y-8">
               <div className="flex items-start gap-5">
@@ -222,8 +219,8 @@ export default function HomePage() {
                   <FaMapMarkerAlt className="text-green-500 text-xl" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-lg">Location</h4>
-                  <p className="text-gray-400 mt-1">No 123, Main Road, Colombo 01</p>
+                  <h4 className="font-bold text-lg">{t("contact_location_title")}</h4>
+                  <p className="text-gray-400 mt-1">{t("contact_location_val")}</p>
                 </div>
               </div>
               <div className="flex items-start gap-5">
@@ -231,7 +228,7 @@ export default function HomePage() {
                   <FaEnvelope className="text-green-500 text-xl" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-lg">Email</h4>
+                  <h4 className="font-bold text-lg">{t("contact_email_title")}</h4>
                   <p className="text-gray-400 mt-1">info@ebuslanka.com</p>
                 </div>
               </div>
@@ -240,7 +237,7 @@ export default function HomePage() {
                   <FaPhoneAlt className="text-green-500 text-xl" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-lg">Call Us</h4>
+                  <h4 className="font-bold text-lg">{t("contact_call_title")}</h4>
                   <p className="text-gray-400 mt-1">+94 774299871</p>
                 </div>
               </div>
@@ -249,20 +246,20 @@ export default function HomePage() {
 
           {/* Contact Form (Right Side) */}
           <div className="md:w-7/12 p-10 md:p-14 bg-green-100">
-            <h3 className="text-2xl font-bold text-gray-900 mb-8">Send a Message</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-8">{t("form_title")}</h3>
             <form ref={form} onSubmit={sendEmail} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <input type="text" name="user_name" placeholder="Your Name" required className="w-full p-4 bg-white shadow-sm border border-transparent rounded-xl outline-none focus:border-green-600 focus:shadow-md transition-all text-gray-800" />
-                <input type="email" name="user_email" placeholder="Your Email" required className="w-full p-4 bg-white shadow-sm border border-transparent rounded-xl outline-none focus:border-green-600 focus:shadow-md transition-all text-gray-800" />
+                <input type="text" name="user_name" placeholder={t("form_name")} required className="w-full p-4 bg-white shadow-sm border border-transparent rounded-xl outline-none focus:border-green-600 focus:shadow-md transition-all text-gray-800" />
+                <input type="email" name="user_email" placeholder={t("form_email")} required className="w-full p-4 bg-white shadow-sm border border-transparent rounded-xl outline-none focus:border-green-600 focus:shadow-md transition-all text-gray-800" />
               </div>
-              <input type="text" name="subject" placeholder="Subject" required className="w-full p-4 bg-white shadow-sm border border-transparent rounded-xl outline-none focus:border-green-600 focus:shadow-md transition-all text-gray-800" />
-              <textarea name="message" placeholder="Message" rows="5" required className="w-full p-4 bg-white shadow-sm border border-transparent rounded-xl outline-none focus:border-green-600 focus:shadow-md transition-all resize-none text-gray-800"></textarea>
+              <input type="text" name="subject" placeholder={t("form_subject")} required className="w-full p-4 bg-white shadow-sm border border-transparent rounded-xl outline-none focus:border-green-600 focus:shadow-md transition-all text-gray-800" />
+              <textarea name="message" placeholder={t("form_message")} rows="5" required className="w-full p-4 bg-white shadow-sm border border-transparent rounded-xl outline-none focus:border-green-600 focus:shadow-md transition-all resize-none text-gray-800"></textarea>
               <button 
                 type="submit" 
                 disabled={isLoading}
                 className={`w-full text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-md ${isLoading ? "bg-gray-500" : "bg-gray-900 hover:bg-black hover:shadow-xl hover:-translate-y-0.5"}`}
               >
-                {isLoading ? "Sending Message..." : "Send Message"}
+                {isLoading ? t("form_sending") : t("form_send_btn")}
               </button>
             </form>
           </div>
@@ -270,7 +267,6 @@ export default function HomePage() {
 
       </div>
       
-
       <Footer />
     </div>
   );

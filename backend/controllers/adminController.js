@@ -140,7 +140,7 @@ export async function approveBus(req, res) {
     }
 }
 
-// 8. Reject and Delete Bus
+// 8. Reject and Delete Buses
 export async function rejectBus(req, res) {
     try {
         const busId = req.params.id;

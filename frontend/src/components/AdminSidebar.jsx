@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-// FaFileAlt (Reports icon) එක ඉවත් කර ඇත
-import { FaThLarge, FaUserPlus, FaBus, FaBusAlt, FaUserTie, FaUsers, FaMapMarkerAlt, FaStar, FaSignOutAlt } from 'react-icons/fa';
+import { FaThLarge, FaUserPlus, FaBus, FaBusAlt, FaUserTie, FaUsers, FaStar, FaClipboardList, FaSignOutAlt } from 'react-icons/fa';
 
 export default function AdminSidebar() {
   const location = useLocation();
@@ -12,7 +11,6 @@ export default function AdminSidebar() {
     window.location.href = "/"; 
   };
 
-  // Reports ලින්ක් එක ඉවත් කර ඇත
   const navLinks = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: <FaThLarge /> },
     { name: 'Op Requests', path: '/admin/operator-requests', icon: <FaUserPlus /> },
@@ -20,7 +18,7 @@ export default function AdminSidebar() {
     { name: 'Manage Buses', path: '/admin/manage-buses', icon: <FaBusAlt /> },
     { name: 'Operators', path: '/admin/operators', icon: <FaUserTie /> },
     { name: 'Passengers', path: '/admin/passengers', icon: <FaUsers /> },
-    { name: 'Routes', path: '/admin/routes', icon: <FaMapMarkerAlt /> },
+    { name: 'Manifest', path: '/admin/manifest', icon: <FaClipboardList /> }, 
     { name: 'Reviews', path: '/admin/reviews', icon: <FaStar /> },
   ];
 

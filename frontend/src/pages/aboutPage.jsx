@@ -1,6 +1,7 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import PassengerChatWidget from "../components/PassengerChatWidget";
 import { FaBullseye, FaLightbulb, FaShieldAlt, FaUsers } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
@@ -10,6 +11,12 @@ export default function AboutPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
+
+      {/* AI Chatbot Widget placed right below Navbar on the top-right side */}
+            <div className="absolute top-20 right-6 z-50">
+              <PassengerChatWidget />
+            </div>
+      
 
       {/* Hero Section for About Page */}
       <div 

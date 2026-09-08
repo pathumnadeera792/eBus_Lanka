@@ -1,6 +1,7 @@
 import Booking from "../models/booking.js";
 import Bus from "../models/bus.js";
 import Passenger from "../models/passenger.js";
+import BusOperator from "../models/operator.js";
 import crypto from "crypto";
 
 // 1. Get booked seats for a specific bus, date, and departure time (ignoring expired/past trips)
@@ -36,14 +37,37 @@ export const getBookedSeats = async (req, res) => {
     }
 };
 
-// 2. Create a new booking
+// 2. Create a new booking with past-date and past-time check
 export const createBooking = async (req, res) => {
     try {
         const { busId, selectedSeats, totalAmount, journeyDate } = req.body;
-        const passengerId = req.user.id; // From verifyToken middleware
+        const passengerId = req.user.id; 
 
         if (!selectedSeats || selectedSeats.length === 0) {
             return res.status(400).json({ message: "No seats selected" });
+        }
+
+        const bus = await Bus.findById(busId);
+        if (!bus) {
+            return res.status(404).json({ message: "Bus not found" });
+        }
+
+        const todayStr = new Date().toISOString().split("T")[0];
+
+        // Prevent booking for past dates
+        if (journeyDate < todayStr) {
+            return res.status(400).json({ message: "Cannot book seats for past dates." });
+        }
+
+        // Prevent booking if journeyDate is today and departure time has passed
+        if (journeyDate === todayStr && bus.departureTime) {
+            const [hours, minutes] = bus.departureTime.split(":");
+            const tripDateTime = new Date();
+            tripDateTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0);
+
+            if (new Date() > tripDateTime) {
+                return res.status(400).json({ message: "Cannot book seats for a trip departure time that has already passed today." });
+            }
         }
 
         const newBooking = new Booking({
@@ -61,7 +85,6 @@ export const createBooking = async (req, res) => {
         res.status(500).json({ message: "Booking failed", error: error.message });
     }
 };
-
 // 3. Get bookings for the logged-in passenger (Fixed without populate naming errors)
 export const getMyBookings = async (req, res) => {
     try {
@@ -203,22 +226,21 @@ export const getOperatorDashboardStats = async (req, res) => {
     }
 };
 
-// Get All Manifests for Super Admin (Manual fetch to prevent MissingSchemaError)
+// Get All Manifests for Super Admin
 export const getAllManifestsForAdmin = async (req, res) => {
     try {
-        // 1. Fetch all bookings on the platform, sorted by newest first
         const bookings = await Booking.find().sort({ createdAt: -1 });
 
-        // 2. Manually fetch Passenger, Bus, and Operator details without using .populate()
         const populatedBookings = await Promise.all(
             bookings.map(async (booking) => {
                 const passengerDetails = await Passenger.findById(booking.passengerId).select("fullName email phone");
-                const busDetails = await Bus.findById(booking.busId).select("busName brNumber type routeNo amount departureTime operatorId");
                 
-                // Fetch Operator details using the operatorId found in bus details
+                // Fetching routeNo, departureLocation, and destination from Bus model
+                const busDetails = await Bus.findById(booking.busId).select("busName brNumber routeNo departureLocation destination amount departureTime operatorId");
+                
                 let operatorDetails = { fullName: "N/A", companyName: "N/A" };
                 if (busDetails && busDetails.operatorId) {
-                    const foundOperator = await Passenger.findById(busDetails.operatorId).select("fullName companyName"); // නැතහොත් අදාළ Operator model එක භාවිතා කරන්න
+                    const foundOperator = await BusOperator.findById(busDetails.operatorId).select("fullName companyName"); 
                     if (foundOperator) {
                         operatorDetails = foundOperator;
                     }
@@ -239,5 +261,33 @@ export const getAllManifestsForAdmin = async (req, res) => {
     } catch (error) {
         console.error("Backend Manifest Error:", error.message); 
         res.status(500).json({ message: "Failed to fetch all manifests", error: error.message });
+    }
+};
+
+// Get Super Admin Dashboard Statistics
+export const getAdminDashboardStats = async (req, res) => {
+    try {
+        // 1. Count total operators using the imported BusOperator model directly
+        const totalOperators = await BusOperator.countDocuments();
+        
+        // 2. Count total registered passengers
+        const totalPassengers = await Passenger.countDocuments();
+        
+        // 3. Count total registered buses
+        const totalBuses = await Bus.countDocuments();
+        
+        // 4. Calculate total revenue from all bookings
+        const bookings = await Booking.find();
+        const totalRevenue = bookings.reduce((acc, b) => acc + (b.totalAmount || 0), 0);
+
+        res.status(200).json({
+            totalOperators,
+            totalPassengers,
+            totalBuses,
+            totalRevenue
+        });
+    } catch (error) {
+        console.error("Error fetching admin dashboard stats:", error);
+        res.status(500).json({ message: "Failed to fetch stats", error: error.message });
     }
 };

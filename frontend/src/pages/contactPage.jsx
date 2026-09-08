@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import PassengerChatWidget from "../components/PassengerChatWidget";
 import { FaMapMarkerAlt, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
 import emailjs from "@emailjs/browser";
 import toast from "react-hot-toast";
@@ -14,7 +15,7 @@ export default function ContactPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    // අනිවාර්යයෙන්ම මේවගේ වටේට "" (Quotation marks) තියෙන්න ඕනේ
+
     const SERVICE_ID = "service_9msb6a7"; 
     const TEMPLATE_ID = "template_ofi337c";
     const PUBLIC_KEY = "AEBOvunVgqsrVWHgI";
@@ -29,7 +30,7 @@ export default function ContactPage() {
       console.error("EmailJS Error:", error);
       toast.error("Failed to send the message. Please try again.");
     } finally {
-      // අනිවාර්යයෙන්ම Loading state එක false වෙනවා
+
       setIsLoading(false);
     }
   };
@@ -37,6 +38,12 @@ export default function ContactPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
+
+      {/* AI Chatbot Widget placed right below Navbar on the top-right side */}
+      <div className="absolute top-20 right-6 z-50">
+        <PassengerChatWidget />
+      </div>
+
 
       {/* Hero Section */}
       <div 

@@ -24,7 +24,7 @@ const operatorSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-// Model Create
-const Operator = mongoose.model("operators", operatorSchema);
+// Model Create (Safe against OverwriteModelError during hot-reloading)
+const Operator = mongoose.models.operators || mongoose.model("operators", operatorSchema);
 
 export default Operator;

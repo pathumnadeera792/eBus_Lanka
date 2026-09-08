@@ -122,7 +122,7 @@ export default function AdminManifest() {
                 ) : (
                   manifests.map((item) => {
                     const busNumber = item.busId?.brNumber || item.busId?.busName || "N/A";
-                    const routeInfo = item.busId ? `${item.busId.route || 'Route N/A'}` : "N/A";
+                    const routeInfo = item.busId ? (item.busId.routeNo ? `Route: ${item.busId.routeNo}` : `${item.busId.departureLocation || ''} - ${item.busId.destination || ''}`) : "N/A";
                     
                     // Operator Details
                     const operatorName = item.busId?.operatorId?.fullName || "N/A";

@@ -4,8 +4,9 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import PassengerChatWidget from "../components/PassengerChatWidget";
 import { FaDownload } from "react-icons/fa";
-import jsPDF from "jspdf"; // PDF Download සඳහා
+import jsPDF from "jspdf"; // PDF Download 
 
 export default function Reservations() {
   const navigate = useNavigate();
@@ -75,6 +76,12 @@ export default function Reservations() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
       <Navbar />
+
+      {/* AI Chatbot Widget placed right below Navbar on the top-right side */}
+      <div className="absolute top-20 right-6 z-50">
+        <PassengerChatWidget />
+      </div>
+
 
       {/* Hero Header Section */}
       <div 

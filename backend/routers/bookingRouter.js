@@ -1,6 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { getBookedSeats, createBooking, getMyBookings, getOperatorManifest, deleteBooking, getOperatorDashboardStats,getAllManifestsForAdmin } from "../controllers/bookingController.js";
+import { getBookedSeats, createBooking, getMyBookings, getOperatorManifest, deleteBooking, getOperatorDashboardStats,getAllManifestsForAdmin,getAdminDashboardStats} from "../controllers/bookingController.js";
 
 
 const bookingRouter = express.Router();
@@ -29,5 +29,6 @@ bookingRouter.delete("/operator/delete/:id", verifyToken, deleteBooking);
 bookingRouter.get("/operator/dashboard-stats", verifyToken, getOperatorDashboardStats);
 // Super Admin Get All Manifests Route
 bookingRouter.get("/admin/manifest", verifyToken, getAllManifestsForAdmin);
+bookingRouter.get("/admin/dashboard-stats", verifyToken, getAdminDashboardStats);
 
 export default bookingRouter;

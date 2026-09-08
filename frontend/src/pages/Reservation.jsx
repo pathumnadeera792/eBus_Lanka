@@ -15,6 +15,7 @@ export default function Reservation() {
   const [journeyDate, setJourneyDate] = useState(new Date().toISOString().split("T")[0]);
   const [bookedSeats, setBookedSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [isTripPassed, setIsTripPassed] = useState(false);
   
   // State for Custom Payment Modal
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -31,8 +32,33 @@ export default function Reservation() {
       navigate("/find-bus");
       return;
     }
+
+    // Check if journey date is in the past, or if it's today and departure time has passed
+    const checkTripTime = () => {
+      const todayStr = new Date().toISOString().split("T")[0];
+      
+      if (journeyDate < todayStr) {
+        // If journey date is a past date (e.g., yesterday)
+        setIsTripPassed(true);
+      } else if (journeyDate === todayStr && bus.departureTime) {
+        // If journey date is today, check departure time
+        const [hours, minutes] = bus.departureTime.split(":");
+        const tripDateTime = new Date();
+        tripDateTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0);
+
+        if (new Date() > tripDateTime) {
+          setIsTripPassed(true);
+        } else {
+          setIsTripPassed(false);
+        }
+      } else {
+        setIsTripPassed(false);
+      }
+    };
+
+    checkTripTime();
     fetchBookedSeats();
-  }, [journeyDate]);
+  }, [journeyDate, bus, navigate]);
 
   const fetchBookedSeats = async () => {
     try {
@@ -50,6 +76,10 @@ export default function Reservation() {
   };
 
   const handleSeatClick = (seatNo) => {
+    if (isTripPassed) {
+      toast.error("Cannot select seats for past dates or past departure times.");
+      return;
+    }
     if (bookedSeats.includes(seatNo)) return;
 
     if (selectedSeats.includes(seatNo)) {
@@ -61,6 +91,10 @@ export default function Reservation() {
 
   // Open Payment Modal
   const handleProceedBooking = () => {
+    if (isTripPassed) {
+      toast.error("This trip date/time has already passed. Cannot book.");
+      return;
+    }
     if (selectedSeats.length === 0) {
       toast.error("Please select at least one seat.");
       return;
@@ -201,7 +235,7 @@ export default function Reservation() {
   };
 
   const renderSeatButton = (seatNo) => {
-    const isBooked = bookedSeats.includes(seatNo);
+    const isBooked = bookedSeats.includes(seatNo) || isTripPassed;
     const isSelected = selectedSeats.includes(seatNo);
 
     let bgColor = "bg-green-600 hover:bg-green-500 text-white"; 
@@ -280,9 +314,15 @@ export default function Reservation() {
             </div>
 
             <div className="mt-8">
+              {isTripPassed && (
+                <div className="mb-3 p-3 bg-red-100 border border-red-300 text-red-700 text-xs font-bold rounded-xl text-center">
+                  ⚠️ Cannot book tickets for past dates or passed departure times.
+                </div>
+              )}
               <button 
                 onClick={handleProceedBooking}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-center block mb-3 text-base"
+                disabled={isTripPassed}
+                className={`w-full font-bold py-3.5 rounded-xl shadow-lg transition text-center block mb-3 text-base ${isTripPassed ? 'bg-gray-400 cursor-not-allowed text-gray-200' : 'bg-green-600 hover:bg-green-700 text-white'}`}
               >
                 Pay & Book Now
               </button>
@@ -300,12 +340,11 @@ export default function Reservation() {
 
       </div>
 
-      {/* --- CUSTOM PAYMENT MODAL (Matching your prototype Frame 3 design) --- */}
+      {/* --- CUSTOM PAYMENT MODAL --- */}
       {isPaymentModalOpen && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8 relative border border-gray-200">
             
-            {/* Close button */}
             <button 
               onClick={() => setIsPaymentModalOpen(false)}
               className="absolute top-5 right-5 text-gray-400 hover:text-red-600 text-xl font-bold"
@@ -313,7 +352,6 @@ export default function Reservation() {
               ✕
             </button>
 
-            {/* Visa / MasterCard Logos Header */}
             <div className="flex justify-center items-center gap-4 mb-6">
               <div className="border rounded-lg px-3 py-1 shadow-sm font-extrabold text-blue-800 italic tracking-wider">VISA</div>
               <div className="border rounded-lg px-3 py-1 shadow-sm font-bold text-red-600">MasterCard</div>

@@ -4,6 +4,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import PassengerChatWidget from "../components/PassengerChatWidget";
 import { FaStar, FaPlus, FaTimes } from "react-icons/fa";
 
 export default function PassengerReviews() {
@@ -83,6 +84,12 @@ export default function PassengerReviews() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
       <Navbar />
+
+      {/* AI Chatbot Widget placed right below Navbar on the top-right side */}
+      <div className="absolute top-20 right-6 z-50">
+        <PassengerChatWidget />
+      </div>
+
 
       {/* Hero Section */}
       <div 

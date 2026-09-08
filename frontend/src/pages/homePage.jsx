@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import BusCard from "../components/BusCard";
+import PassengerChatWidget from "../components/PassengerChatWidget";
 import emailjs from "@emailjs/browser";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -76,6 +77,13 @@ export default function HomePage() {
   return (
     <div className="w-full min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
+
+            
+    {/* AI Chatbot Widget placed right below Navbar on the top-right side */}
+    <div className="absolute top-20 right-6 z-50">
+      <PassengerChatWidget />
+    </div>
+      
 
       {/* 1. Hero Section */}
       <div 
